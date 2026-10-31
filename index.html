@@ -53,7 +53,8 @@
         .sel { background: rgba(123, 97, 255, 0.65) !important; }
         .chk { background: radial-gradient(circle, #ff4757 30%, transparent 80%) !important; }
         
-        .p-i { width: 85%; height: 85%; pointer-events: none; z-index: 5; }
+        .p-i { width: 85%; height: 85%; cursor: grab; z-index: 5; }
+        .p-i:active { cursor: grabbing; }
 
         .side-panel { display: flex; flex-direction: column; justify-content: space-between; height: 85vh; width: 320px; }
         
@@ -294,117 +295,3 @@
         }
 
         function updateClockDisplay() {
-            const fmt = (s) => {
-                let m = Math.floor(s / 60), sec = s % 60;
-                return `${m}:${sec < 10 ? '0' : ''}${sec}`;
-            };
-
-            const myClock = document.getElementById('my-clock');
-            const oppClock = document.getElementById('opp-clock');
-
-            const myT = myColor === 'white' ? whiteTime : blackTime;
-            const oppT = myColor === 'white' ? blackTime : whiteTime;
-
-            myClock.innerText = fmt(myT);
-            oppClock.innerText = fmt(oppT);
-
-            const isMyTurn = (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
-            
-            myClock.classList.toggle('active', isMyTurn);
-            oppClock.classList.toggle('active', !isMyTurn);
-            myClock.classList.toggle('low-time', myT <= 10);
-            oppClock.classList.toggle('low-time', oppT <= 10);
-        }
-
-        function endByTime(winnerColor) {
-            clearInterval(timerInterval);
-            const win = isOffline ? (winnerColor === 'white') : (winnerColor === myColor);
-            showEnd(win ? "ПОБЕДА ПО ВРЕМЕНИ!" : "ПОРАЖЕНИЕ ПО ВРЕМЕНИ!");
-        }
-
-        function render(){
-            const b = document.getElementById('board'); 
-            b.innerHTML = ''; 
-            const boardData = game.board();
-            
-            let rows = [0,1,2,3,4,5,6,7];
-            let cols = [0,1,2,3,4,5,6,7];
-            if(!isOffline && myColor === 'black') { rows.reverse(); cols.reverse(); }
-
-            for(let r of rows) {
-                for(let c of cols) {
-                    let s = boardData[r][c];
-                    let id = String.fromCharCode(97+c) + (8-r);
-                    let d = document.createElement('div');
-                    
-                    d.className = `sq ${(r+c)%2===0?'w-s':'b-s'} ${sel===id?'sel':''}`; 
-                    d.dataset.id = id;
-
-                    if(game.in_check() && s && s.type==='k' && s.color===game.turn()) d.classList.add('chk');
-
-                    if(s){
-                        const img = document.createElement('img');
-                        img.src = `https://images.chesscomfiles.com/chess-pieces/neo/150/${s.color}${s.type}.png`;
-                        img.className = 'p-i';
-                        d.appendChild(img);
-                    }
-
-                    d.onclick = () => squareClick(id);
-                    b.appendChild(d);
-                }
-            }
-        }
-
-        function squareClick(id) {
-            if(game.game_over()) return;
-            const piece = game.get(id);
-
-            const isMyTurn = isOffline || (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
-            if(!isMyTurn && !isOffline) return;
-
-            if(sel === id) { 
-                sel = null; 
-            } else if(piece && (isOffline || piece.color === game.turn())) { 
-                sel = id; 
-            } else if(sel) {
-                const moveObj = { from: sel, to: id, promotion: 'q' };
-                const m = game.move(moveObj);
-                
-                if(m) { 
-                    sel = null; 
-                    const movedColor = m.color;
-                    addIncrement(movedColor);
-                    
-                    if(!isOffline && currentRoomId) {
-                        socket.emit('move', { roomId: currentRoomId, moveData: moveObj });
-                    }
-                    checkEnd();
-                } else { 
-                    sel = null; 
-                }
-            }
-            render();
-        }
-
-        function checkEnd() {
-            if(game.game_over()) {
-                clearInterval(timerInterval);
-                let msg = "НИЧЬЯ!";
-                if(game.in_checkmate()) {
-                    if(isOffline) {
-                        msg = (game.turn() === 'w' ? "ЧЕРНЫЕ" : "БЕЛЫЕ") + " ПОБЕДИЛИ!";
-                    } else {
-                        msg = (game.turn() === (myColor==='white'?'b':'w')) ? "ВЫ ПОБЕДИЛИ!" : "ВЫ ПРОИГРАЛИ!";
-                    }
-                }
-                showEnd(msg);
-            }
-        }
-
-        function showEnd(txt) {
-            document.getElementById('res-ds').innerText = txt;
-            document.getElementById('res-scr').style.display = 'flex';
-        }
-    </script>
-</body>
-</html>
