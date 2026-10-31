@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRCHESS</title>
-    <!-- Шахматная логика и сокеты -->
+    <title>IRCHESS // Ultimate Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
@@ -36,18 +35,17 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
         }
         
-        /* Жесткое управление экранами */
         .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 10; background: transparent; }
         .screen.active { display: flex !important; }
 
-        .menu-container { width: 520px; padding: 40px; text-align: center; position: relative; z-index: 20; }
-        .brand-subtitle { font-size: 12px; color: var(--accent); font-weight: 800; letter-spacing: 4px; margin-bottom: 6px; text-transform: uppercase; }
-        h1 { font-size: 48px; letter-spacing: 12px; text-transform: uppercase; font-weight: 900; margin: 0 0 25px; color: #fff; }
+        .menu-container { width: 560px; padding: 35px; text-align: center; position: relative; z-index: 20; max-height: 90vh; overflow-y: auto; }
+        .brand-subtitle { font-size: 12px; color: var(--accent); font-weight: 800; letter-spacing: 4px; margin-bottom: 4px; text-transform: uppercase; }
+        h1 { font-size: 42px; letter-spacing: 10px; text-transform: uppercase; font-weight: 900; margin: 0 0 20px; color: #fff; }
         
         .btn { 
             cursor: pointer; border: none; border-radius: 14px; font-weight: 700; text-transform: uppercase; 
-            transition: all 0.2s ease; padding: 16px 28px; letter-spacing: 2px; 
-            color: #fff; display: inline-block; font-size: 14px; background: var(--accent);
+            transition: all 0.2s ease; padding: 14px 24px; letter-spacing: 2px; 
+            color: #fff; display: inline-block; font-size: 13px; background: var(--accent);
             box-shadow: 0 4px 20px var(--accent-glow);
         }
         .btn:hover { transform: translateY(-2px); filter: brightness(1.15); box-shadow: 0 6px 25px var(--accent-glow); }
@@ -55,17 +53,20 @@
         .btn-secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); box-shadow: none; }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
 
-        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+        .section-title { font-size: 11px; color: var(--accent); font-weight: 800; margin: 16px 0 8px; letter-spacing: 1.5px; text-align: left; }
+        
+        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
         .time-card { 
-            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 14px; 
-            padding: 16px 10px; text-align: center; transition: all 0.2s ease; cursor: pointer; 
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 12px; 
+            padding: 10px 6px; text-align: center; transition: all 0.2s ease; cursor: pointer; 
         }
-        .time-card:hover { transform: translateY(-3px); border-color: var(--accent); background: rgba(255, 255, 255, 0.06); }
-        .time-card b { font-size: 20px; display: block; letter-spacing: 1px; font-weight: 800; }
-        .time-card span { font-size: 10px; color: #34d399; font-weight: 700; letter-spacing: 1.5px; margin-top: 4px; display: block; }
+        .time-card:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(255, 255, 255, 0.06); }
+        .time-card.active-tc { border-color: #fff; background: rgba(99, 102, 241, 0.2); box-shadow: 0 0 12px var(--accent-glow); }
+        .time-card b { font-size: 16px; display: block; letter-spacing: 1px; font-weight: 800; }
+        .time-card span { font-size: 9px; color: #34d399; font-weight: 700; letter-spacing: 1px; margin-top: 2px; display: block; }
 
-        .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 14px; border-radius: 14px; border: 1px solid var(--border); font-size: 13px; color: #a1a1aa; }
-        .rating-footer b { font-size: 15px; color: #fff; font-family: monospace; }
+        .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--border); font-size: 12px; color: #a1a1aa; margin-top: 15px; }
+        .rating-footer b { font-size: 14px; color: #fff; font-family: monospace; }
 
         #game-scr { gap: 40px; padding: 30px; background: var(--bg); }
         
@@ -102,8 +103,8 @@
         .settings-btn { position: fixed; top: 24px; right: 24px; cursor: pointer; font-size: 26px; z-index: 50; opacity: 0.7; transition: 0.2s; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
         .settings-btn:hover { opacity: 1; border-color: var(--accent); background: rgba(255,255,255,0.12); }
 
-        .opt-btn { width: 75px; height: 50px; border-radius: 10px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.25s; }
-        .opt-btn.active-opt { border-color: #fff !important; box-shadow: 0 0 15px var(--accent) !important; transform: scale(1.05); }
+        .opt-btn { width: 60px; height: 40px; border-radius: 10px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.25s; }
+        .opt-btn.active-opt { border-color: #fff !important; box-shadow: 0 0 15px var(--accent) !important; transform: scale(1.08); }
 
         @media(max-width: 950px) {
             #game-scr { flex-direction: column; gap: 20px; padding: 15px; }
@@ -124,59 +125,56 @@
     
     <!-- Настройки -->
     <div id="set-ovl" class="ovl" onclick="closeOvl('set-ovl')">
-        <div class="glass-panel menu-container" style="width: 420px; text-align: left;" onclick="event.stopPropagation()">
-            <h3 style="margin-top: 0; font-size: 22px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
+        <div class="glass-panel menu-container" style="width: 440px; text-align: left;" onclick="event.stopPropagation()">
+            <h3 style="margin-top: 0; font-size: 20px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
             
-            <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px;">АКЦЕНТ ИНТЕРФЕЙСА</div>
-            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px">
+            <div class="section-title">ФОН (НЕОНОВОЕ СВЕЧЕНИЕ)</div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 14px">
                 <div id="th-p" class="opt-btn" style="background: #6366f1" onclick="stT('p')"></div>
                 <div id="th-g" class="opt-btn" style="background: #10b981" onclick="stT('g')"></div>
                 <div id="th-b" class="opt-btn" style="background: #f43f5e" onclick="stT('b')"></div>
+                <div id="th-y" class="opt-btn" style="background: #eab308" onclick="stT('y')"></div>
             </div>
 
-            <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px;">ЦВЕТОВАЯ СХЕМА ДОСКИ</div>
-            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 28px">
-                <div id="br-brown" class="opt-btn" onclick="setBoard('brown')"><div style="flex:1;background:#f0d9b5"></div><div style="flex:1;background:#b58863"></div></div>
-                <div id="br-green" class="opt-btn" onclick="setBoard('green')"><div style="flex:1;background:#ebecd0"></div><div style="flex:1;background:#779556"></div></div>
+            <div class="section-title">СТИЛЬ ДОСКИ</div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px">
+                <div id="br-brown" class="opt-btn" onclick="setBoard('brown')" title="Классика"><div style="flex:1;background:#f0d9b5"></div><div style="flex:1;background:#b58863"></div></div>
+                <div id="br-green" class="opt-btn" onclick="setBoard('green')" title="Зеленая"><div style="flex:1;background:#ebecd0"></div><div style="flex:1;background:#779556"></div></div>
+                <div id="br-glass" class="opt-btn" onclick="setBoard('glass')" title="Стеклянная"><div style="flex:1;background:rgba(255,255,255,0.4)"></div><div style="flex:1;background:rgba(0,0,0,0.4)"></div></div>
             </div>
 
-            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 12px;" onclick="startOffline()">ИГРАТЬ ОФФЛАЙН (1 МЫШКА)</button>
-            <button class="btn" style="width: 100%;" onclick="closeOvl('set-ovl')">ЗАКРЫТЬ</button>
+            <button class="btn" style="width: 100%;" onclick="closeOvl('set-ovl')">СОХРАНИТЬ И ЗАКРЫТЬ</button>
         </div>
     </div>
 
-    <!-- Главное меню (гарантированно активно при старте) -->
+    <!-- Главное меню -->
     <div id="m-scr" class="screen active">
         <div class="glass-panel menu-container">
-            <div id="hi" class="brand-subtitle">IRCHESS PLAYER</div>
+            <div class="brand-subtitle">IRCHESS ULTIMATE</div>
             <h1>IRCHESS</h1>
             
-            <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 12px; letter-spacing: 2px;">ВЫБЕРИТЕ КОНТРОЛЬ ВРЕМЕНИ</div>
-            <div class="time-grid">
-                <div class="time-card" onclick="startSearch('1+0')"><b>1+0</b><span>BULLET</span></div>
-                <div class="time-card" onclick="startSearch('2+1')"><b>2+1</b><span>BULLET</span></div>
-                <div class="time-card" onclick="startSearch('3+0')"><b>3+0</b><span>BLITZ</span></div>
-                <div class="time-card" onclick="startSearch('3+2')"><b>3+2</b><span>BLITZ</span></div>
-                <div class="time-card" onclick="startSearch('5+0')"><b>5+0</b><span>BLITZ</span></div>
-                <div class="time-card" onclick="startSearch('5+3')"><b>5+3</b><span>BLITZ</span></div>
-                <div class="time-card" onclick="startSearch('10+0')"><b>10+0</b><span>RAPID</span></div>
-                <div class="time-card" onclick="startSearch('15+10')"><b>15+10</b><span>RAPID</span></div>
-                <div class="time-card" onclick="startSearch('30+0')"><b>30+0</b><span>RAPID</span></div>
+            <div class="section-title" style="text-align: center;">ОНЛАЙН BATTLE (ВЫБЕРИТЕ КОНТРОЛЬ)</div>
+            <div class="time-grid" id="online-tc-grid">
+                <div class="time-card active-tc" onclick="setOnlineTC('1+0', this)"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOnlineTC('2+1', this)"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOnlineTC('3+0', this)"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('3+2', this)"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('5+0', this)"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('5+3', this)"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('10+0', this)"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOnlineTC('15+10', this)"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOnlineTC('30+0', this)"><b>30+0</b><span>RAPID</span></div>
             </div>
-            <div class="rating-footer"><div>BULLET <b id="rb">1400</b></div><div>BLITZ <b id="rl">1400</b></div><div>RAPID <b id="rr">1400</b></div></div>
-        </div>
-    </div>
+            <button class="btn" style="width: 100%; margin-bottom: 16px;" onclick="startOnlineSearch()">ИГРАТЬ ОНЛАЙН</button>
 
-    <!-- Поиск соперника -->
-    <div id="wait-scr" class="ovl">
-        <div class="glass-panel menu-container" style="width: 400px;">
-            <h3 style="margin-top: 0; letter-spacing: 1px;">ПОИСК СОПЕРНИКА</h3>
-            <p id="search-status" style="font-size: 15px; color: var(--accent); margin: 25px 0; font-weight: 700;">Подключение к серверам...</p>
-            <button class="btn btn-secondary" style="width: 100%;" onclick="cancelSearch()">ОТМЕНИТЬ</button>
-        </div>
-    </div>
-
-    <!-- Окно конца игры -->
-    <div id="res-scr" class="ovl">
-        <div class="glass-panel menu-container" style="width: 420px;">
-            <h2
+            <div class="section-title" style="text-align: center;">ОФФЛАЙН РЕЖИМ (1 МЫШКА)</div>
+            <div class="time-grid" id="offline-tc-grid">
+                <div class="time-card active-off" onclick="setOfflineTC('1+0', this)"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOfflineTC('2+1', this)"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOfflineTC('3+0', this)"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('3+2', this)"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('5+0', this)"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('5+3', this)"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('10+0', this)"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOfflineTC('15+10', this)"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick
