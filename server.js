@@ -2,49 +2,49 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http, { cors: { origin: "*" } });
+const path = require('path');
 
-// Очередь ожидания игроков по контролю времени
-// Ключ — время (например, '3+0'), значение — socket.id первого игрока
+// Раздаем все статические файлы (index.html, pieces, chess.min.js) из папки
+app.use(express.static(__dirname));
+
+// При заходе на главную страницу отдаем index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Очередь ожидания игроков: timeControl -> socket.id
 const waitingPlayers = {};
-
-// Активные игры: roomId -> { white: socketId, black: socketId }
-const activeGames = {};
 
 io.on('connection', (socket) => {
     console.log('Игрок подключился:', socket.id);
 
-    // Игрок нажал кнопку поиска игры
+    // Поиск игры
     socket.on('find_game', (timeControl) => {
-        console.log(`Игрок ${socket.id} ищет игру с контролем ${timeControl}`);
+        console.log(`Игрок ${socket.id} в очереди для ${timeControl}`);
 
-        if (waitingPlayers[timeControl]) {
-            // Соперник уже ждет в этой очереди! Создаем игру
+        if (waitingPlayers[timeControl] && waitingPlayers[timeControl] !== socket.id) {
+            // Найден соперник!
             const opponentId = waitingPlayers[timeControl];
-            delete waitingPlayers[timeControl]; // Очищаем очередь
+            delete waitingPlayers[timeControl];
 
             const roomId = 'room_' + Math.random().toString(36).substring(2, 8);
-
-            // Случайным образом выбираем, кто белые, а кто черные
             const isFirstWhite = Math.random() < 0.5;
             const whiteId = isFirstWhite ? socket.id : opponentId;
             const blackId = isFirstWhite ? opponentId : socket.id;
 
-            activeGames[roomId] = { white: whiteId, black: blackId };
+            const whiteSocket = io.sockets.sockets.get(whiteId);
+            const blackSocket = io.sockets.sockets.get(blackId);
 
-            // До обоих игроков добавляем в комнату socket.io
-            io.sockets.sockets.get(whiteId)?.join(roomId);
-            io.sockets.sockets.get(blackId)?.join(roomId);
+            if (whiteSocket) whiteSocket.join(roomId);
+            if (blackSocket) blackSocket.join(roomId);
 
-            // Отправляем сигнал старта игры с разным цветом
             io.to(whiteId).emit('game_started', { roomId, color: 'white' });
             io.to(blackId).emit('game_started', { roomId, color: 'black' });
 
-            console.log(`Игра началась в комнате ${roomId}: Белые (${whiteId}), Черные (${blackId})`);
+            console.log(`Игра создана: ${roomId}`);
         } else {
-            // Никого нет, ставим этого игрока в очередь
             waitingPlayers[timeControl] = socket.id;
             socket.emit('waiting_for_opponent');
-            console.log(`Игрок ${socket.id} добавлен в очередь для ${timeControl}`);
         }
     });
 
@@ -52,7 +52,6 @@ io.on('connection', (socket) => {
     socket.on('cancel_search', (timeControl) => {
         if (waitingPlayers[timeControl] === socket.id) {
             delete waitingPlayers[timeControl];
-            console.log(`Игрок ${socket.id} отменил поиск`);
         }
     });
 
@@ -62,8 +61,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        console.log('Игрок отключился:', socket.id);
-        // Удаляем из очередей ожидания, если он там был
         for (let tc in waitingPlayers) {
             if (waitingPlayers[tc] === socket.id) {
                 delete waitingPlayers[tc];
@@ -74,5 +71,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
-    console.log('Сервер запущен на порту ' + PORT);
+    console.log('Сервер успешно запущен на порту ' + PORT);
 });
