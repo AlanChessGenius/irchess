@@ -9,10 +9,10 @@
     <style>
         :root { 
             --accent: #6366f1; 
-            --accent-glow: rgba(99, 102, 241, 0.4);
-            --bg: #09090b; 
-            --card-bg: rgba(24, 24, 27, 0.95);
-            --border: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --bg: #0b0b0e; 
+            --card-bg: rgba(18, 18, 22, 0.95);
+            --border: rgba(255, 255, 255, 0.1);
             --sq-l: #f0d9b5; 
             --sq-d: #b58863; 
         }
@@ -24,83 +24,163 @@
             background: var(--bg); user-select: none; 
         }
         
-        .ambient-glow { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-        .orb { position: absolute; width: 700px; height: 700px; background: var(--accent); filter: blur(160px); opacity: 0.15; border-radius: 50%; transition: background 0.4s ease; }
-        .orb-1 { top: -250px; left: -250px; } 
-        .orb-2 { bottom: -250px; right: -250px; }
+        .ambient-glow { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .orb { position: absolute; width: 600px; height: 600px; background: var(--accent); filter: blur(140px); opacity: 0.12; border-radius: 50%; transition: background 0.3s ease; }
+        .orb-1 { top: -200px; left: -200px; } 
+        .orb-2 { bottom: -200px; right: -200px; }
 
         .glass-panel { 
-            background: var(--card-bg); backdrop-filter: blur(24px); 
-            border: 1px solid var(--border); border-radius: 20px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
+            background: var(--card-bg); backdrop-filter: blur(16px); 
+            border: 1px solid var(--border); border-radius: 12px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); 
         }
         
-        /* Исправлено отображение и слои экранов */
         .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 10; background: transparent; }
         .screen.active { display: flex !important; }
 
-        .menu-container { width: 560px; padding: 35px; text-align: center; position: relative; z-index: 20; max-height: 90vh; overflow-y: auto; pointer-events: auto; }
-        .brand-subtitle { font-size: 12px; color: var(--accent); font-weight: 800; letter-spacing: 4px; margin-bottom: 4px; text-transform: uppercase; }
-        h1 { font-size: 42px; letter-spacing: 10px; text-transform: uppercase; font-weight: 900; margin: 0 0 20px; color: #fff; }
+        .menu-container { width: 540px; padding: 30px; text-align: center; position: relative; z-index: 20; max-height: 90vh; overflow-y: auto; pointer-events: auto; }
+        .brand-subtitle { font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 3px; margin-bottom: 4px; text-transform: uppercase; }
+        h1 { font-size: 38px; letter-spacing: 8px; text-transform: uppercase; font-weight: 900; margin: 0 0 18px; color: #fff; }
         
         .btn { 
-            cursor: pointer; border: none; border-radius: 14px; font-weight: 700; text-transform: uppercase; 
-            transition: all 0.2s ease; padding: 14px 24px; letter-spacing: 2px; 
+            cursor: pointer; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; 
+            transition: all 0.2s ease; padding: 12px 22px; letter-spacing: 1.5px; 
             color: #fff; display: inline-block; font-size: 13px; background: var(--accent);
-            box-shadow: 0 4px 20px var(--accent-glow); position: relative; z-index: 30; pointer-events: auto;
+            box-shadow: 0 4px 15px var(--accent-glow); position: relative; z-index: 30; pointer-events: auto;
         }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.15); box-shadow: 0 6px 25px var(--accent-glow); }
+        .btn:hover { transform: translateY(-1px); filter: brightness(1.15); box-shadow: 0 6px 20px var(--accent-glow); }
         .btn:active { transform: translateY(0); }
         .btn-secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); box-shadow: none; }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
 
-        .section-title { font-size: 11px; color: var(--accent); font-weight: 800; margin: 16px 0 8px; letter-spacing: 1.5px; text-align: left; }
+        .section-title { font-size: 10px; color: var(--accent); font-weight: 800; margin: 14px 0 6px; letter-spacing: 1.5px; text-align: left; }
         
-        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; position: relative; z-index: 30; pointer-events: auto; }
+        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; position: relative; z-index: 30; pointer-events: auto; }
         .time-card { 
-            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 12px; 
-            padding: 10px 6px; text-align: center; transition: all 0.2s ease; cursor: pointer; position: relative; z-index: 30; pointer-events: auto;
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; 
+            padding: 9px 6px; text-align: center; transition: all 0.2s ease; cursor: pointer; position: relative; z-index: 30; pointer-events: auto;
         }
-        .time-card:hover { transform: translateY(-2px); border-color: var(--accent); background: rgba(255, 255, 255, 0.06); }
-        .time-card.active-tc { border-color: #fff !important; background: rgba(99, 102, 241, 0.3) !important; box-shadow: 0 0 12px var(--accent-glow); }
-        .time-card b { font-size: 16px; display: block; letter-spacing: 1px; font-weight: 800; }
+        .time-card:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.05); }
+        .time-card.active-tc { border-color: #fff !important; background: rgba(99, 102, 241, 0.25) !important; box-shadow: 0 0 10px var(--accent-glow); }
+        .time-card b { font-size: 15px; display: block; letter-spacing: 1px; font-weight: 800; }
         .time-card span { font-size: 9px; color: #34d399; font-weight: 700; letter-spacing: 1px; margin-top: 2px; display: block; }
 
-        .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 14px; border: 1px solid var(--border); font-size: 12px; color: #a1a1aa; margin-top: 20px; position: relative; z-index: 30; }
-        .rating-footer b { font-size: 14px; color: #fff; font-family: monospace; }
+        .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 11px; color: #a1a1aa; margin-top: 16px; position: relative; z-index: 30; }
+        .rating-footer b { font-size: 13px; color: #fff; font-family: monospace; }
 
-        #game-scr { gap: 40px; padding: 30px; background: var(--bg); z-index: 100; }
+        #game-scr { gap: 30px; padding: 25px; background: var(--bg); z-index: 100; }
         
-        #board { height: 86vh; width: 86vh; max-width: 80vw; max-height: 80vw; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 8px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8); position: relative; border: 2px solid rgba(255,255,255,0.05); }
+        #board { height: 82vh; width: 82vh; max-width: 78vw; max-height: 78vw; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 6px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; border: 1px solid rgba(255,255,255,0.08); }
         .sq { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
         .w-s { background: var(--sq-l); } .b-s { background: var(--sq-d); }
-        .sel { background: rgba(99, 102, 241, 0.55) !important; box-shadow: inset 0 0 12px rgba(0,0,0,0.3); }
+        .sel { background: rgba(99, 102, 241, 0.5) !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
         .chk { background: radial-gradient(circle, #ef4444 40%, transparent 85%) !important; }
         
         .p-i { width: 94%; height: 94%; cursor: grab; z-index: 5; filter: none !important; }
         .p-i:active { cursor: grabbing; }
 
-        .side-panel { display: flex; flex-direction: column; justify-content: space-between; height: 86vh; width: 320px; }
+        .side-panel { display: flex; flex-direction: column; justify-content: space-between; height: 82vh; width: 300px; }
         
         .player-card { 
-            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(20px);
-            padding: 14px 16px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(16px);
+            padding: 12px 14px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-        .player-info { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+        .player-info { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
         
         .clock { 
-            font-family: monospace; font-size: 24px; font-weight: 900; background: #000; 
-            padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); min-width: 90px; text-align: center; 
+            font-family: monospace; font-size: 22px; font-weight: 900; background: #000; 
+            padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); min-width: 85px; text-align: center; 
             letter-spacing: 1px; color: #f4f4f5;
         }
-        .clock.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .clock.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
         .clock.low-time { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse-red 1s infinite; }
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Оверлеи теперь строго поверх всего и кликабельны */
-        .ovl { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); pointer-events: auto; }
+        .ovl { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); pointer-events: auto; }
         .ovl.active { display: flex !important; }
 
-        .settings-btn { position: fixed; top: 24px; right: 24px; cursor: pointer; font-size: 26px; z-index: 150; opacity: 0.7; transition: 0.2s; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-        .settings
+        .settings-btn { position: fixed; top: 20px; right: 20px; cursor: pointer; font-size: 22px; z-index: 150; opacity: 0.75; transition: 0.2s; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .settings-btn:hover { opacity: 1; border-color: var(--accent); background: rgba(255,255,255,0.1); }
+
+        .opt-btn { width: 54px; height: 36px; border-radius: 6px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.2s; position: relative; z-index: 30; }
+        .opt-btn.active-opt { border-color: #fff !important; box-shadow: 0 0 12px var(--accent) !important; transform: scale(1.05); }
+
+        @media(max-width: 950px) {
+            #game-scr { flex-direction: column; gap: 15px; padding: 10px; }
+            #board { height: 60vw; width: 60vw; }
+            .side-panel { height: auto; width: 100%; max-width: 60vw; flex-direction: row; gap: 10px; }
+            .player-card { flex: 1; padding: 8px; }
+            .clock { font-size: 16px; min-width: 65px; padding: 4px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    
+    <div class="settings-btn" onclick="openOvl('set-ovl')">⚙️</div>
+    
+    <!-- Настройки (с оффлайном и выбором досок/фонов) -->
+    <div id="set-ovl" class="ovl" onclick="closeOvl('set-ovl')">
+        <div class="glass-panel menu-container" style="width: 440px; text-align: left;" onclick="event.stopPropagation()">
+            <h3 style="margin-top: 0; font-size: 18px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
+            
+            <div class="section-title">ФОН (НЕОНОВОЕ СВЕЧЕНИЕ)</div>
+            <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px">
+                <div id="th-p" class="opt-btn" style="background: #6366f1" onclick="stT('p')" title="Фиолетовый"></div>
+                <div id="th-g" class="opt-btn" style="background: #10b981" onclick="stT('g')" title="Зеленый"></div>
+                <div id="th-b" class="opt-btn" style="background: #f43f5e" onclick="stT('b')" title="Красный"></div>
+                <div id="th-y" class="opt-btn" style="background: #eab308" onclick="stT('y')" title="Желтый"></div>
+            </div>
+
+            <div class="section-title">СТИЛЬ ДОСКИ</div>
+            <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 14px">
+                <div id="br-brown" class="opt-btn" onclick="setBoard('brown')" title="Классика"><div style="flex:1;background:#f0d9b5"></div><div style="flex:1;background:#b58863"></div></div>
+                <div id="br-green" class="opt-btn" onclick="setBoard('green')" title="Зеленая"><div style="flex:1;background:#ebecd0"></div><div style="flex:1;background:#779556"></div></div>
+                <div id="br-glass" class="opt-btn" onclick="setBoard('glass')" title="Стеклянная"><div style="flex:1;background:rgba(255,255,255,0.4)"></div><div style="flex:1;background:rgba(0,0,0,0.4)"></div></div>
+            </div>
+
+            <div class="section-title">ОФФЛАЙН РЕЖИМ (КОНТРОЛЬ ВРЕМЕНИ)</div>
+            <div class="time-grid" id="offline-tc-grid" style="margin-bottom: 14px;">
+                <div class="time-card active-tc" onclick="setOfflineTC('1+0', this)"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOfflineTC('2+1', this)"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOfflineTC('3+0', this)"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('3+2', this)"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('5+0', this)"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('5+3', this)"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOfflineTC('10+0', this)"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOfflineTC('15+10', this)"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOfflineTC('30+0', this)"><b>30+0</b><span>RAPID</span></div>
+            </div>
+
+            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="startOffline()">ИГРАТЬ ОФФЛАЙН</button>
+            <button class="btn" style="width: 100%;" onclick="closeOvl('set-ovl')">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Главное меню (с рейтингами) -->
+    <div id="m-scr" class="screen active">
+        <div class="glass-panel menu-container">
+            <div class="brand-subtitle">IRCHESS PLATFORM</div>
+            <h1>IRCHESS</h1>
+            
+            <div class="section-title" style="text-align: center;">ОНЛАЙН BATTLE (ВЫБЕРИТЕ КОНТРОЛЬ)</div>
+            <div class="time-grid" id="online-tc-grid">
+                <div class="time-card active-tc" onclick="setOnlineTC('1+0', this)"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOnlineTC('2+1', this)"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="setOnlineTC('3+0', this)"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('3+2', this)"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('5+0', this)"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('5+3', this)"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="setOnlineTC('10+0', this)"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOnlineTC('15+10', this)"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="setOnlineTC('30+0', this)"><b>30+0</b><span>RAPID</span></div>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 4px;" onclick="startOnlineSearch()">НАЙТИ СОПЕРНИКА</button>
+
+            <!-- Рейтинги на главном экране -->
+            <div class="rating-footer">
+                <div>BULLET <b id="r-bullet">1500</b>
