@@ -36,10 +36,11 @@
             pointer-events: auto;
         }
         
-        .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 10; background: transparent; }
+        /* Исправлено: экраны абсолютно кликабельны на переднем плане */
+        .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 1000; background: transparent; }
         .screen.active { display: flex !important; }
 
-        .menu-container { width: 540px; padding: 30px; text-align: center; position: relative; z-index: 100; max-height: 90vh; overflow-y: auto; }
+        .menu-container { width: 540px; padding: 30px; text-align: center; position: relative; z-index: 1001; max-height: 90vh; overflow-y: auto; pointer-events: auto; }
         .brand-subtitle { font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 3px; margin-bottom: 4px; text-transform: uppercase; }
         h1 { font-size: 38px; letter-spacing: 8px; text-transform: uppercase; font-weight: 900; margin: 0 0 18px; color: #fff; }
         
@@ -47,7 +48,7 @@
             cursor: pointer; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; 
             transition: all 0.2s ease; padding: 12px 22px; letter-spacing: 1.5px; 
             color: #fff; display: inline-block; font-size: 13px; background: var(--accent);
-            box-shadow: 0 4px 15px var(--accent-glow); position: relative; z-index: 110;
+            box-shadow: 0 4px 15px var(--accent-glow); position: relative; z-index: 1002; pointer-events: auto;
         }
         .btn:hover { transform: translateY(-1px); filter: brightness(1.15); box-shadow: 0 6px 20px var(--accent-glow); }
         .btn:active { transform: translateY(0); }
@@ -56,22 +57,22 @@
 
         .section-title { font-size: 10px; color: var(--accent); font-weight: 800; margin: 14px 0 6px; letter-spacing: 1.5px; text-align: left; }
         
-        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; position: relative; z-index: 110; }
+        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; position: relative; z-index: 1002; pointer-events: auto; }
         .time-card { 
             background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; 
-            padding: 9px 6px; text-align: center; transition: all 0.2s ease; cursor: pointer; position: relative; z-index: 110;
+            padding: 9px 6px; text-align: center; transition: all 0.2s ease; cursor: pointer; position: relative; z-index: 1002; pointer-events: auto;
         }
         .time-card:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.05); }
         .time-card.active-tc { border-color: #fff !important; background: rgba(99, 102, 241, 0.25) !important; box-shadow: 0 0 10px var(--accent-glow); }
         .time-card b { font-size: 15px; display: block; letter-spacing: 1px; font-weight: 800; pointer-events: none; }
         .time-card span { font-size: 9px; color: #34d399; font-weight: 700; letter-spacing: 1px; margin-top: 2px; display: block; pointer-events: none; }
 
-        .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 11px; color: #a1a1aa; margin-top: 16px; position: relative; z-index: 110; }
+        .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 11px; color: #a1a1aa; margin-top: 16px; position: relative; z-index: 1002; pointer-events: auto; }
         .rating-footer b { font-size: 13px; color: #fff; font-family: monospace; }
 
-        #game-scr { gap: 30px; padding: 25px; background: var(--bg); z-index: 200; }
+        #game-scr { gap: 30px; padding: 25px; background: var(--bg); z-index: 1000; }
         
-        #board { height: 82vh; width: 82vh; max-width: 78vw; max-height: 78vw; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 6px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; border: 1px solid rgba(255,255,255,0.08); z-index: 210; }
+        #board { height: 82vh; width: 82vh; max-width: 78vw; max-height: 78vw; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 6px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.7); position: relative; border: 1px solid rgba(255,255,255,0.08); z-index: 1001; }
         .sq { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
         .w-s { background: var(--sq-l); } .b-s { background: var(--sq-d); }
         .sel { background: rgba(99, 102, 241, 0.5) !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
@@ -80,7 +81,7 @@
         .p-i { width: 94%; height: 94%; cursor: grab; z-index: 5; filter: none !important; }
         .p-i:active { cursor: grabbing; }
 
-        .side-panel { display: flex; flex-direction: column; justify-content: space-between; height: 82vh; width: 300px; z-index: 210; }
+        .side-panel { display: flex; flex-direction: column; justify-content: space-between; height: 82vh; width: 300px; z-index: 1001; pointer-events: auto; }
         
         .player-card { 
             background: var(--card-bg); border: 1px solid var(--border); backdrop-filter: blur(16px);
@@ -98,13 +99,13 @@
         .clock.low-time { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse-red 1s infinite; }
         @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        .ovl { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 300; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .ovl { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); pointer-events: auto; }
         .ovl.active { display: flex !important; }
 
-        .settings-btn { position: fixed; top: 20px; right: 20px; cursor: pointer; font-size: 22px; z-index: 250; opacity: 0.75; transition: 0.2s; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .settings-btn { position: fixed; top: 20px; right: 20px; cursor: pointer; font-size: 22px; z-index: 3000; opacity: 0.75; transition: 0.2s; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; pointer-events: auto; }
         .settings-btn:hover { opacity: 1; border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
-        .opt-btn { width: 54px; height: 36px; border-radius: 6px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.2s; position: relative; z-index: 310; }
+        .opt-btn { width: 54px; height: 36px; border-radius: 6px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.2s; position: relative; z-index: 2005; pointer-events: auto; }
         .opt-btn.active-opt { border-color: #fff !important; box-shadow: 0 0 12px var(--accent) !important; transform: scale(1.05); }
 
         @media(max-width: 950px) {
@@ -195,302 +196,4 @@
     <div id="wait-scr" class="ovl">
         <div class="glass-panel menu-container" style="width: 380px;">
             <h3 style="margin-top: 0; letter-spacing: 1px; font-size: 18px;">ПОИСК СОПЕРНИКА</h3>
-            <p id="search-status" style="font-size: 14px; color: var(--accent); margin: 20px 0; font-weight: 700;">Подключение к серверам...</p>
-            <button class="btn btn-secondary" style="width: 100%;" onclick="cancelSearch()">ОТМЕНИТЬ</button>
-        </div>
-    </div>
-
-    <!-- Окно конца игры -->
-    <div id="res-scr" class="ovl">
-        <div class="glass-panel menu-container" style="width: 400px;">
-            <h2 id="res-tt" style="margin-top: 0; letter-spacing: 1.5px; font-size: 20px;">ИТОГ ПАРТИИ</h2>
-            <p id="res-ds" style="font-size: 18px; margin-bottom: 20px; font-weight: 700; color: #fff;"></p>
-            <button class="btn" style="width: 100%;" onclick="location.reload()">В МЕНЮ</button>
-        </div>
-    </div>
-
-    <!-- Игровой экран -->
-    <div id="game-scr" class="screen">
-        <div id="board"></div>
-        <div class="side-panel">
-            <div class="player-card">
-                <div class="player-info"><span style="opacity: 0.5">👤</span> <span id="opp-name">Соперник</span></div>
-                <div id="opp-clock" class="clock">00:00</div>
-            </div>
-
-            <div class="glass-panel" style="padding: 16px; text-align: center; border-radius: 10px;">
-                <div id="game-info-badge" style="color: var(--accent); font-weight: 800; margin-bottom: 10px; font-size: 11px; letter-spacing: 1.5px;">РЕЙТИНГОВАЯ ПАРТИЯ</div>
-                <button class="btn btn-secondary" style="width: 100%; font-size: 11px; padding: 9px;" onclick="resignGame()">СДАТЬСЯ / ВЫЙТИ</button>
-            </div>
-
-            <div class="player-card">
-                <div class="player-info"><span style="opacity: 0.5">👤</span> <span id="my-name">Вы</span></div>
-                <div id="my-clock" class="clock">00:00</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let game = null, sel = null;
-        let myColor = 'white';
-        let currentRoomId = null;
-        let selectedOnlineTC = '1+0';
-        let selectedOfflineTC = '5+0';
-        let isOffline = false;
-
-        let whiteTime = 180, blackTime = 180, increment = 0;
-        let timerInterval = null;
-
-        let socket = null;
-        try { if (typeof io !== 'undefined') socket = io(); } catch(e) {}
-
-        let ratings = JSON.parse(localStorage.getItem('ir_ratings')) || { bullet: 1500, blitz: 1500, rapid: 1500 };
-        
-        window.addEventListener('DOMContentLoaded', () => { 
-            const savedTheme = localStorage.getItem('ir_theme') || 'p';
-            const savedBoard = localStorage.getItem('ir_board') || 'brown';
-            stT(savedTheme, false);
-            setBoard(savedBoard, false);
-            updateRatingsUI();
-        });
-
-        function updateRatingsUI() {
-            document.getElementById('r-bullet').innerText = Math.round(ratings.bullet);
-            document.getElementById('r-blitz').innerText = Math.round(ratings.blitz);
-            document.getElementById('r-rapid').innerText = Math.round(ratings.rapid);
-            localStorage.setItem('ir_ratings', JSON.stringify(ratings));
-        }
-
-        function getPool(tc) {
-            if(tc.includes('1+0') || tc.includes('2+1')) return 'bullet';
-            if(tc.includes('10+0') || tc.includes('15+10') || tc.includes('30+0')) return 'rapid';
-            return 'blitz';
-        }
-
-        function openOvl(id) { document.getElementById(id).classList.add('active'); }
-        function closeOvl(id) { document.getElementById(id).classList.remove('active'); }
-
-        function setOnlineTC(tc, el) {
-            selectedOnlineTC = tc;
-            document.querySelectorAll('#online-tc-grid .time-card').forEach(c => c.classList.remove('active-tc'));
-            el.classList.add('active-tc');
-        }
-
-        function setOfflineTC(tc, el) {
-            selectedOfflineTC = tc;
-            document.querySelectorAll('#offline-tc-grid .time-card').forEach(c => c.classList.remove('active-tc'));
-            el.classList.add('active-tc');
-        }
-
-        function startOnlineSearch() {
-            isOffline = false;
-            if(socket) socket.emit('find_game', selectedOnlineTC);
-            document.getElementById('search-status').innerText = `Поиск (${selectedOnlineTC})...`;
-            openOvl('wait-scr');
-        }
-
-        function cancelSearch() {
-            if(selectedOnlineTC && socket) socket.emit('cancel_search', selectedOnlineTC);
-            closeOvl('wait-scr');
-        }
-
-        function startOffline() {
-            isOffline = true;
-            myColor = 'white';
-            closeOvl('set-ovl');
-            document.getElementById('m-scr').classList.remove('active');
-            document.getElementById('game-scr').classList.add('active');
-            document.getElementById('game-info-badge').innerText = `ОФФЛАЙН (${selectedOfflineTC})`;
-            document.getElementById('opp-name').innerText = "Игрок 2 (Черные)";
-            document.getElementById('my-name').innerText = "Игрок 1 (Белые)";
-            initGameConfig(selectedOfflineTC);
-        }
-
-        if(socket) {
-            socket.on('game_started', (data) => {
-                currentRoomId = data.roomId;
-                myColor = data.color;
-                closeOvl('wait-scr');
-                document.getElementById('opp-name').innerText = "Соперник";
-                document.getElementById('my-name').innerText = "Вы";
-                document.getElementById('game-info-badge').innerText = `РЕЙТИНГ (${selectedOnlineTC})`;
-                initGameConfig(selectedOnlineTC);
-            });
-
-            socket.on('move', (moveData) => {
-                if(game) {
-                    const res = game.move(moveData);
-                    if(res) { addIncrement(res.color); render(); checkEnd(); }
-                }
-            });
-        }
-
-        function resignGame() {
-            if(!isOffline) {
-                applyRatingChange(false, getPool(selectedOnlineTC));
-                showEnd("ВЫ СДАЛИСЬ. ПОРАЖЕНИЕ!");
-            } else {
-                location.reload();
-            }
-        }
-
-        function stT(c, save = true){
-            const accentMap = {
-                'p': { main: '#6366f1', glow: 'rgba(99, 102, 241, 0.3)' },
-                'g': { main: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' },
-                'b': { main: '#f43f5e', glow: 'rgba(244, 63, 94, 0.3)' },
-                'y': { main: '#eab308', glow: 'rgba(234, 179, 8, 0.3)' }
-            };
-            const theme = accentMap[c] || accentMap['p'];
-            document.documentElement.style.setProperty('--accent', theme.main);
-            document.documentElement.style.setProperty('--accent-glow', theme.glow);
-            if(save) localStorage.setItem('ir_theme', c);
-            
-            document.querySelectorAll('#th-p, #th-g, #th-b, #th-y').forEach(el => el.classList.remove('active-opt'));
-            const activeEl = document.getElementById('th-' + c);
-            if(activeEl) activeEl.classList.add('active-opt');
-        }
-
-        function setBoard(t, save = true) {
-            const r = document.documentElement;
-            if(t === 'brown') {
-                r.style.setProperty('--sq-l', '#f0d9b5'); r.style.setProperty('--sq-d', '#b58863');
-            } else if(t === 'green') {
-                r.style.setProperty('--sq-l', '#ebecd0'); r.style.setProperty('--sq-d', '#779556');
-            } else if(t === 'glass') {
-                r.style.setProperty('--sq-l', 'rgba(255, 255, 255, 0.35)'); r.style.setProperty('--sq-d', 'rgba(0, 0, 0, 0.45)');
-            }
-            if(save) localStorage.setItem('ir_board', t);
-            
-            document.querySelectorAll('#br-brown, #br-green, #br-glass').forEach(el => el.classList.remove('active-opt'));
-            const activeEl = document.getElementById('br-' + t);
-            if(activeEl) activeEl.classList.add('active-opt');
-        }
-
-        function initGameConfig(tc) {
-            if (typeof Chess === 'undefined') {
-                alert("Ошибка: библиотека шахматной логики не загрузилась.");
-                return;
-            }
-            game = new Chess();
-            const parts = tc.split('+');
-            const minutes = parseInt(parts[0]);
-            increment = parseInt(parts[1] || 0);
-            whiteTime = minutes * 60;
-            blackTime = minutes * 60;
-            document.getElementById('m-scr').classList.remove('active');
-            document.getElementById('game-scr').classList.add('active');
-            updateClockDisplay();
-            startTimer();
-            render();
-        }
-
-        function startTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if(!game || game.game_over()) return;
-                if(game.turn() === 'w') {
-                    whiteTime--;
-                    if(whiteTime <= 0) endByTime('black');
-                } else {
-                    blackTime--;
-                    if(blackTime <= 0) endByTime('white');
-                }
-                updateClockDisplay();
-            }, 1000);
-        }
-
-        function addIncrement(color) {
-            if(color === 'w') whiteTime += increment;
-            else blackTime += increment;
-            updateClockDisplay();
-        }
-
-        function updateClockDisplay() {
-            const fmt = (s) => {
-                let m = Math.floor(s / 60), sec = s % 60;
-                return `${m}:${sec < 10 ? '0' : ''}${sec}`;
-            };
-            const myClock = document.getElementById('my-clock');
-            const oppClock = document.getElementById('opp-clock');
-            const myT = myColor === 'white' ? whiteTime : blackTime;
-            const oppT = myColor === 'white' ? blackTime : whiteTime;
-            myClock.innerText = fmt(myT);
-            oppClock.innerText = fmt(oppT);
-            const isMyTurn = (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
-            myClock.classList.toggle('active', isMyTurn);
-            oppClock.classList.toggle('active', !isMyTurn);
-            myClock.classList.toggle('low-time', myT <= 10);
-            oppClock.classList.toggle('low-time', oppT <= 10);
-        }
-
-        function endByTime(winnerColor) {
-            clearInterval(timerInterval);
-            const win = isOffline ? (winnerColor === 'white') : (winnerColor === myColor);
-            if(!isOffline) applyRatingChange(win, getPool(selectedOnlineTC));
-            showEnd(win ? "ПОБЕДА ПО ВРЕМЕНИ!" : "ПОРАЖЕНИЕ ПО ВРЕМЕНИ!");
-        }
-
-        function applyRatingChange(won, pool) {
-            let r = ratings[pool];
-            let diff = Math.floor(Math.random() * 51) + 50; 
-            let change = 0;
-
-            if (r >= 1500 && r < 1700) {
-                if (won) {
-                    change = (diff >= 50 && diff <= 100) ? 5 : 15;
-                } else {
-                    change = (diff >= 50 && diff <= 100) ? -30 : -15;
-                }
-            } else if (r >= 1700 && r < 2000) {
-                if (won) {
-                    let randArr = [7, 8, 9];
-                    let base = randArr[Math.floor(Math.random() * randArr.length)];
-                    change = (diff >= 50 && diff <= 100) ? 4 : base;
-                } else {
-                    change = (diff >= 50 && diff <= 100) ? -10 : -8;
-                }
-            } else if (r >= 2000) {
-                change = won ? 3 : -3;
-            }
-
-            ratings[pool] = Math.max(100, ratings[pool] + change);
-            updateRatingsUI();
-        }
-
-        function render(){
-            const b = document.getElementById('board'); 
-            b.innerHTML = ''; 
-            const boardData = game.board();
-            let rows = [0,1,2,3,4,5,6,7];
-            let cols = [0,1,2,3,4,5,6,7];
-            if(!isOffline && myColor === 'black') { rows.reverse(); cols.reverse(); }
-
-            for(let r of rows) {
-                for(let c of cols) {
-                    let s = boardData[r][c];
-                    let id = String.fromCharCode(97+c) + (8-r);
-                    let d = document.createElement('div');
-                    d.className = `sq ${(r+c)%2===0?'w-s':'b-s'} ${sel===id?'sel':''}`; 
-                    d.dataset.id = id;
-
-                    if(game.in_check() && s && s.type==='k' && s.color===game.turn()) d.classList.add('chk');
-
-                    if(s){
-                        const img = document.createElement('img');
-                        img.src = `pieces/${s.color}${s.type}.png`;
-                        img.className = 'p-i';
-                        img.draggable = true;
-                        
-                        img.ondragstart = (e) => {
-                            e.dataTransfer.setData('text/plain', id);
-                            e.dataTransfer.dropEffect = 'move';
-                        };
-                        
-                        d.appendChild(img);
-                    }
-
-                    d.ondragover = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
-                    d.ondrop = (e) => {
-                        e.preventDefault();
-                        const fromId = e.data
+            <p id="search-
