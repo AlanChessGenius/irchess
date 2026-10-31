@@ -24,7 +24,6 @@
             background: var(--bg); user-select: none; 
         }
         
-        /* Атмосферные неоновые фоновые сферы */
         .ambient-glow { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
         .orb { position: absolute; width: 700px; height: 700px; background: var(--accent); filter: blur(160px); opacity: 0.1; border-radius: 50%; transition: 0.5s ease; }
         .orb-1 { top: -250px; left: -250px; } 
@@ -36,7 +35,9 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
         }
         
-        /* ГЛАВНОЕ МЕНЮ */
+        .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 200; }
+        .screen.active { display: flex; }
+
         .menu-container { width: 520px; padding: 40px; text-align: center; position: relative; }
         .brand-subtitle { font-size: 12px; color: var(--accent); font-weight: 800; letter-spacing: 4px; margin-bottom: 6px; text-transform: uppercase; }
         h1 { font-size: 48px; letter-spacing: 12px; text-transform: uppercase; font-weight: 900; margin: 0 0 25px; background: linear-gradient(135deg, #fff 30%, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -52,7 +53,6 @@
         .btn-secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); box-shadow: none; }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); box-shadow: none; }
 
-        /* СЕТКА КОНТРОЛЯ ВРЕМЕНИ */
         .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
         .time-card { 
             background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 14px; 
@@ -65,8 +65,8 @@
         .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.3); padding: 14px; border-radius: 14px; border: 1px solid var(--border); font-size: 13px; color: #a1a1aa; }
         .rating-footer b { font-size: 15px; color: #fff; font-family: monospace; }
 
-        /* ИГРОВОЙ ЭКРАН */
         #game-scr { display: none; position: fixed; inset: 0; z-index: 300; background: var(--bg); align-items: center; justify-content: center; gap: 40px; padding: 30px; }
+        #game-scr.active { display: flex; }
         
         #board { height: 86vh; width: 86vh; max-width: 80vw; max-height: 80vw; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 8px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8); position: relative; border: 2px solid rgba(255,255,255,0.05); }
         .sq { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
@@ -77,7 +77,6 @@
         .p-i { width: 86%; height: 86%; cursor: grab; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
         .p-i:active { cursor: grabbing; }
 
-        /* ПРАВАЯ ПАНЕЛЬ */
         .side-panel { display: flex; flex-direction: column; justify-content: space-between; height: 86vh; width: 340px; }
         
         .player-card { 
@@ -91,40 +90,4 @@
             padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); min-width: 110px; text-align: center; 
             letter-spacing: 1px; color: #f4f4f5;
         }
-        .clock.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
-        .clock.low-time { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse-red 1s infinite; }
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
-        /* МОДАЛЬНЫЕ ОКНА */
-        .ovl { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 400; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); }
-        .settings-btn { position: fixed; top: 24px; right: 24px; cursor: pointer; font-size: 26px; z-index: 350; opacity: 0.6; transition: 0.2s; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-        .settings-btn:hover { opacity: 1; border-color: var(--accent); background: rgba(255,255,255,0.08); }
-
-        .opt-btn { width: 75px; height: 50px; border-radius: 10px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.25s; }
-        .opt-btn.active-opt { border-color: #fff; box-shadow: 0 0 15px var(--accent); transform: scale(1.05); }
-
-        @media(max-width: 950px) {
-            #game-scr { flex-direction: column; gap: 20px; padding: 15px; }
-            #board { height: 62vw; width: 62vw; }
-            .side-panel { height: auto; width: 100%; max-width: 62vw; flex-direction: row; gap: 12px; }
-            .player-card { flex: 1; padding: 12px; }
-            .clock { font-size: 20px; min-width: 80px; padding: 6px 10px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="ambient-glow">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-    </div>
-    
-    <div class="settings-btn" onclick="ov('set-ovl')">⚙️</div>
-    
-    <!-- Настройки -->
-    <div id="set-ovl" class="ovl" onclick="hd()"><div class="glass-panel menu-container" style="width: 420px; text-align: left;" onclick="event.stopPropagation()">
-        <h3 style="margin-top: 0; font-size: 22px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
-        
-        <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px;">АКЦЕНТ ИНТЕРФЕЙСА</div>
-        <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px">
-            <div id="th-p" class="opt-btn" style="background: #6366f1" onclick="stT('p')"></div>
-            <div id="th-g" class="opt-btn" style="background: #10b981" onclick="
+        .clock.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow:
