@@ -1,4 +1,5 @@
-"name": "irchess",
+{
+  "name": "irchess",
   "version": "1.0.0",
   "description": "Chess platform",
   "main": "server.js",
