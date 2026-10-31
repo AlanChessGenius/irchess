@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IRCHESS</title>
+    <!-- Подключение библиотеки шахматной логики -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
@@ -45,6 +46,7 @@
         .rf { display:flex; justify-content:space-around; background:rgba(0,0,0,0.4); padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,0.05); font-size: 12px; }
         .rf b { font-size:14px; color: var(--accent); font-family: monospace; }
 
+        /* ИГРОВОЙ ЭКРАН LICHESS STYLE */
         #game-scr { display:none; position: fixed; inset: 0; z-index: 300; background: var(--bg); align-items:center; justify-content:center; gap: 30px; padding: 20px; }
         
         #board { height: 85vh; width: 85vh; max-width: 80vw; max-height: 80vw; display:grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 6px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.8); position: relative; }
@@ -91,6 +93,7 @@
     <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div></div>
     <div class="settings-btn" onclick="ov('set-ovl')">⚙️</div>
     
+    <!-- Настройки -->
     <div id="set-ovl" class="ovl" onclick="hd()"><div class="glass g-box" style="width:380px" onclick="event.stopPropagation()">
         <h3 style="margin-top:0">НАСТРОЙКИ</h3>
         
@@ -111,6 +114,7 @@
         <button class="btn b-st" style="background:#222; width:100%" onclick="hd()">ЗАКРЫТЬ</button>
     </div></div>
 
+    <!-- Главное меню -->
     <div id="m-scr" style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:200;">
         <div class="glass g-box">
             <div id="hi" class="u-nick">...</div><h1>IRCHESS</h1>
@@ -131,14 +135,17 @@
         </div>
     </div>
 
+    <!-- Поиск соперника -->
     <div id="wait-scr" class="ovl"><div class="glass g-box" style="width:360px;">
         <h3 style="margin-top:0">ПОИСК СОПЕРНИКА</h3>
         <p id="search-status" style="font-size: 14px; color: var(--accent); margin: 20px 0; font-weight: 700;">Ищем игрока...</p>
         <button class="btn b-st" style="background:#222; width:100%" onclick="cancelSearch()">ОТМЕНИТЬ</button>
     </div></div>
 
+    <!-- Окно конца игры -->
     <div id="res-scr" class="ovl"><div class="glass g-box" style="width:380px"><h2 id="res-tt" style="margin-top:0">КОНЕЦ ИГРЫ</h2><p id="res-ds" style="font-size: 20px; margin-bottom: 25px; font-weight:700;"></p><button class="btn b-st" onclick="location.reload()">В МЕНЮ</button></div></div>
 
+    <!-- Игровой экран -->
     <div id="game-scr">
         <div id="board"></div>
         <div class="side-panel">
@@ -194,7 +201,6 @@
 
         function startOffline() {
             isOffline = true;
-            game = new Chess();
             hd();
             myColor = 'white';
             document.getElementById('m-scr').style.display = 'none';
@@ -216,10 +222,12 @@
         });
 
         socket.on('move', (moveData) => {
-            game.move(moveData);
-            addIncrement(game.turn() === 'w' ? 'b' : 'w');
-            render();
-            checkEnd();
+            const result = game.move(moveData);
+            if(result) {
+                addIncrement(result.color);
+                render();
+                checkEnd();
+            }
         });
 
         function initU() {
@@ -295,3 +303,139 @@
         }
 
         function updateClockDisplay() {
+            const fmt = (s) => {
+                let m = Math.floor(s / 60), sec = s % 60;
+                return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+            };
+
+            const myClock = document.getElementById('my-clock');
+            const oppClock = document.getElementById('opp-clock');
+
+            const myT = myColor === 'white' ? whiteTime : blackTime;
+            const oppT = myColor === 'white' ? blackTime : whiteTime;
+
+            myClock.innerText = fmt(myT);
+            oppClock.innerText = fmt(oppT);
+
+            const isMyTurn = (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
+            
+            myClock.classList.toggle('active', isMyTurn);
+            oppClock.classList.toggle('active', !isMyTurn);
+            myClock.classList.toggle('low-time', myT <= 10);
+            oppClock.classList.toggle('low-time', oppT <= 10);
+        }
+
+        function endByTime(winnerColor) {
+            clearInterval(timerInterval);
+            const win = isOffline ? (winnerColor === 'white') : (winnerColor === myColor);
+            showEnd(win ? "ПОБЕДА ПО ВРЕМЕНИ!" : "ПОРАЖЕНИЕ ПО ВРЕМЕНИ!");
+        }
+
+        // Отрисовка доски с локальными файлами прямо из корня
+        function render(){
+            const b = document.getElementById('board'); 
+            b.innerHTML = ''; 
+            const boardData = game.board();
+            
+            let rows = [0,1,2,3,4,5,6,7];
+            let cols = [0,1,2,3,4,5,6,7];
+            if(!isOffline && myColor === 'black') { rows.reverse(); cols.reverse(); }
+
+            for(let r of rows) {
+                for(let c of cols) {
+                    let s = boardData[r][c];
+                    let id = String.fromCharCode(97+c) + (8-r);
+                    let d = document.createElement('div');
+                    
+                    d.className = `sq ${(r+c)%2===0?'w-s':'b-s'} ${sel===id?'sel':''}`; 
+                    d.dataset.id = id;
+
+                    if(game.in_check() && s && s.type==='k' && s.color===game.turn()) d.classList.add('chk');
+
+                    if(s){
+                        const img = document.createElement('img');
+                        // Путь строго к твоим загруженным png файлам в корне репозитория (например: wp.png, br.png)
+                        img.src = `./${s.color}${s.type}.png`;
+                        img.className = 'p-i';
+                        img.draggable = true;
+                        
+                        img.ondragstart = (e) => {
+                            e.dataTransfer.setData('text/plain', id);
+                        };
+                        
+                        d.appendChild(img);
+                    }
+
+                    d.ondragover = (e) => e.preventDefault();
+                    d.ondrop = (e) => {
+                        e.preventDefault();
+                        const fromId = e.dataTransfer.getData('text/plain');
+                        makeMove(fromId, id);
+                    };
+
+                    d.onclick = () => squareClick(id);
+                    b.appendChild(d);
+                }
+            }
+        }
+
+        function squareClick(id) {
+            if(game.game_over()) return;
+            const piece = game.get(id);
+            const isMyTurn = isOffline || (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
+            if(!isMyTurn && !isOffline) return;
+
+            if(sel === id) { 
+                sel = null; 
+            } else if(piece && (isOffline || piece.color === game.turn())) { 
+                sel = id; 
+            } else if(sel) {
+                makeMove(sel, id);
+                sel = null;
+            }
+            render();
+        }
+
+        // Чистая шахматная логика ходов и съедания
+        function makeMove(from, to) {
+            if(game.game_over()) return;
+            const isMyTurn = isOffline || (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
+            if(!isMyTurn && !isOffline) return;
+
+            const moveObj = { from: from, to: to, promotion: 'q' };
+            const m = game.move(moveObj);
+            
+            if(m) { 
+                sel = null; 
+                addIncrement(m.color);
+                
+                if(!isOffline && currentRoomId) {
+                    socket.emit('move', { roomId: currentRoomId, moveData: moveObj });
+                }
+                checkEnd();
+                render();
+            }
+        }
+
+        function checkEnd() {
+            if(game.game_over()) {
+                clearInterval(timerInterval);
+                let msg = "НИЧЬЯ!";
+                if(game.in_checkmate()) {
+                    if(isOffline) {
+                        msg = (game.turn() === 'w' ? "ЧЕРНЫЕ" : "БЕЛЫЕ") + " ПОБЕДИЛИ!";
+                    } else {
+                        msg = (game.turn() === (myColor==='white'?'b':'w')) ? "ВЫ ПОБЕДИЛИ!" : "ВЫ ПРОИГРАЛИ!";
+                    }
+                }
+                showEnd(msg);
+            }
+        }
+
+        function showEnd(txt) {
+            document.getElementById('res-ds').innerText = txt;
+            document.getElementById('res-scr').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
