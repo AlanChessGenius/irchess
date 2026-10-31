@@ -20,7 +20,7 @@
             margin: 0; color: #f4f4f5; height: 100vh; width: 100vw; overflow: hidden; 
             display: flex; align-items: center; justify-content: center; 
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); user-select: none; 
+            background: var(--bg); 
         }
         
         .ambient-glow { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
@@ -125,47 +125,47 @@
         <div class="orb orb-2"></div>
     </div>
     
-    <div class="settings-btn" id="open-settings-btn">⚙️</div>
+    <div class="settings-btn" id="open-settings-btn" onclick="openOvl('set-ovl')">⚙️</div>
     
     <!-- Настройки -->
-    <div id="set-ovl" class="ovl">
-        <div class="glass-panel menu-container" style="width: 440px; text-align: left;" id="set-box">
+    <div id="set-ovl" class="ovl" onclick="if(event.target === this) closeOvl('set-ovl')">
+        <div class="glass-panel menu-container" style="width: 440px; text-align: left;" onclick="event.stopPropagation()">
             <h3 style="margin-top: 0; font-size: 18px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
             
             <div class="section-title">ФОН (НЕОНОВОЕ СВЕЧЕНИЕ)</div>
             <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 14px">
-                <div id="th-p" class="opt-btn" style="background: #6366f1" data-theme="p" title="Фиолетовый"></div>
-                <div id="th-g" class="opt-btn" style="background: #10b981" data-theme="g" title="Зеленый"></div>
-                <div id="th-b" class="opt-btn" style="background: #f43f5e" data-theme="b" title="Красный"></div>
-                <div id="th-y" class="opt-btn" style="background: #eab308" data-theme="y" title="Желтый"></div>
+                <div id="th-p" class="opt-btn" style="background: #6366f1" onclick="setTheme('p')" data-theme="p" title="Фиолетовый"></div>
+                <div id="th-g" class="opt-btn" style="background: #10b981" onclick="setTheme('g')" data-theme="g" title="Зеленый"></div>
+                <div id="th-b" class="opt-btn" style="background: #f43f5e" onclick="setTheme('b')" data-theme="b" title="Красный"></div>
+                <div id="th-y" class="opt-btn" style="background: #eab308" onclick="setTheme('y')" data-theme="y" title="Желтый"></div>
             </div>
 
             <div class="section-title">СТИЛЬ ДОСКИ</div>
             <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 16px">
-                <div id="br-brown" class="opt-btn" data-board="brown" title="Классика"><div style="flex:1;background:#f0d9b5;pointer-events:none"></div><div style="flex:1;background:#b58863;pointer-events:none"></div></div>
-                <div id="br-green" class="opt-btn" data-board="green" title="Зеленая"><div style="flex:1;background:#ebecd0;pointer-events:none"></div><div style="flex:1;background:#779556;pointer-events:none"></div></div>
-                <div id="br-glass" class="opt-btn" data-board="glass" title="Стеклянная"><div style="flex:1;background:rgba(255,255,255,0.4);pointer-events:none"></div><div style="flex:1;background:rgba(0,0,0,0.4);pointer-events:none"></div></div>
+                <div id="br-brown" class="opt-btn" onclick="setBoardStyle('brown')" data-board="brown" title="Классика"><div style="flex:1;background:#f0d9b5;pointer-events:none"></div><div style="flex:1;background:#b58863;pointer-events:none"></div></div>
+                <div id="br-green" class="opt-btn" onclick="setBoardStyle('green')" data-board="green" title="Зеленая"><div style="flex:1;background:#ebecd0;pointer-events:none"></div><div style="flex:1;background:#779556;pointer-events:none"></div></div>
+                <div id="br-glass" class="opt-btn" onclick="setBoardStyle('glass')" data-board="glass" title="Стеклянная"><div style="flex:1;background:rgba(255,255,255,0.4);pointer-events:none"></div><div style="flex:1;background:rgba(0,0,0,0.4);pointer-events:none"></div></div>
             </div>
 
             <div class="section-title">ОФФЛАЙН РЕЖИМ (КОНТРОЛЬ ВРЕМЕНИ)</div>
             <div class="time-grid" id="offline-tc-grid" style="margin-bottom: 16px;">
-                <div class="time-card" data-tc="1+0"><b>1+0</b><span>BULLET</span></div>
-                <div class="time-card" data-tc="2+1"><b>2+1</b><span>BULLET</span></div>
-                <div class="time-card" data-tc="3+0"><b>3+0</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="3+2"><b>3+2</b><span>BLITZ</span></div>
-                <div class="time-card active-tc" data-tc="5+0"><b>5+0</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="5+3"><b>5+3</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="10+0"><b>10+0</b><span>RAPID</span></div>
-                <div class="time-card" data-tc="15+10"><b>15+10</b><span>RAPID</span></div>
-                <div class="time-card" data-tc="30+0"><b>30+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="1+0"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="2+1"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="3+0"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="3+2"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card active-tc" onclick="selectTimeCard(this, 'offline')" data-tc="5+0"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="5+3"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="10+0"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="15+10"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="30+0"><b>30+0</b><span>RAPID</span></div>
             </div>
 
-            <button class="btn btn-secondary" style="margin-bottom: 8px;" id="start-offline-btn">ИГРАТЬ ОФФЛАЙН</button>
-            <button class="btn" id="close-settings-btn">ЗАКРЫТЬ</button>
+            <button class="btn btn-secondary" style="margin-bottom: 8px;" onclick="startOfflineGame()">ИГРАТЬ ОФФЛАЙН</button>
+            <button class="btn" onclick="closeOvl('set-ovl')">ЗАКРЫТЬ</button>
         </div>
     </div>
 
-    <!-- Главное меню (ВСЕГДА АКТИВНО ПРИ ЗАГРУЗКЕ) -->
+    <!-- Главное меню -->
     <div id="m-scr" class="app-screen active">
         <div class="glass-panel menu-container">
             <div class="brand-subtitle">IRCHESS PLATFORM</div>
@@ -173,17 +173,17 @@
             
             <div class="section-title" style="text-align: center;">ОНЛАЙН BATTLE (ВЫБЕРИТЕ КОНТРОЛЬ)</div>
             <div class="time-grid" id="online-tc-grid">
-                <div class="time-card active-tc" data-tc="1+0"><b>1+0</b><span>BULLET</span></div>
-                <div class="time-card" data-tc="2+1"><b>2+1</b><span>BULLET</span></div>
-                <div class="time-card" data-tc="3+0"><b>3+0</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="3+2"><b>3+2</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="5+0"><b>5+0</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="5+3"><b>5+3</b><span>BLITZ</span></div>
-                <div class="time-card" data-tc="10+0"><b>10+0</b><span>RAPID</span></div>
-                <div class="time-card" data-tc="15+10"><b>15+10</b><span>RAPID</span></div>
-                <div class="time-card" data-tc="30+0"><b>30+0</b><span>RAPID</span></div>
+                <div class="time-card active-tc" onclick="selectTimeCard(this, 'online')" data-tc="1+0"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="2+1"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="3+0"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="3+2"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="5+0"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="5+3"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="10+0"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="15+10"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="30+0"><b>30+0</b><span>RAPID</span></div>
             </div>
-            <button class="btn" style="margin-top: 6px;" id="find-game-btn">НАЙТИ СОПЕРНИКА</button>
+            <button class="btn" style="margin-top: 6px;" onclick="findOnlineGame()">НАЙТИ СОПЕРНИКА</button>
 
             <!-- Рейтинги -->
             <div class="rating-footer">
@@ -199,7 +199,7 @@
         <div class="glass-panel menu-container" style="width: 380px;">
             <h3 style="margin-top: 0; font-size: 18px;">ПОИСК СОПЕРНИКА</h3>
             <p id="search-status" style="font-size: 13px; color: var(--accent); margin: 18px 0; font-weight: 700;">Поиск соперника...</p>
-            <button class="btn btn-secondary" id="cancel-search-btn">ОТМЕНИТЬ</button>
+            <button class="btn btn-secondary" onclick="closeOvl('wait-scr')">ОТМЕНИТЬ</button>
         </div>
     </div>
 
@@ -208,7 +208,7 @@
         <div class="glass-panel menu-container" style="width: 380px;">
             <h2 id="res-tt" style="margin-top: 0; font-size: 18px;">ИТОГ ПАРТИИ</h2>
             <p id="res-ds" style="font-size: 16px; margin-bottom: 18px; font-weight: 700; color: #fff;"></p>
-            <button class="btn" id="menu-reload-btn">В МЕНЮ</button>
+            <button class="btn" onclick="location.reload()">В МЕНЮ</button>
         </div>
     </div>
 
@@ -229,7 +229,7 @@
                 <div id="my-clock" class="clock">00:00</div>
             </div>
             <div class="game-controls">
-                <button class="btn btn-secondary" style="font-size: 11px; padding: 10px;" id="resign-btn">СДАТЬСЯ</button>
+                <button class="btn btn-secondary" style="font-size: 11px; padding: 10px;" onclick="resignGame()">СДАТЬСЯ</button>
             </div>
         </div>
     </div>
@@ -257,7 +257,6 @@
             setTheme(savedTheme, false);
             setBoardStyle(savedBoard, false);
             updateRatingsUI();
-            initListeners();
         });
 
         function updateRatingsUI() {
@@ -309,87 +308,6 @@
             if(activeEl) activeEl.classList.add('active-opt');
         }
 
-        function bindAction(elId, fn) {
-            const el = document.getElementById(elId);
-            if(!el) return;
-            el.onclick = (e) => { e.stopPropagation(); fn(e); };
-            el.ontouchend = (e) => { e.preventDefault(); e.stopPropagation(); fn(e); };
-        }
-
-        function initListeners() {
-            bindAction('open-settings-btn', () => openOvl('set-ovl'));
-            bindAction('close-settings-btn', () => closeOvl('set-ovl'));
-            
-            document.getElementById('set-ovl').onclick = (e) => { if(e.target === e.currentTarget) closeOvl('set-ovl'); };
-            document.getElementById('set-box').onclick = (e) => e.stopPropagation();
-
-            document.querySelectorAll('[data-theme]').forEach(el => {
-                const themeName = el.dataset.theme;
-                el.onclick = (e) => { e.stopPropagation(); setTheme(themeName); };
-                el.ontouchend = (e) => { e.preventDefault(); e.stopPropagation(); setTheme(themeName); };
-            });
-
-            document.querySelectorAll('[data-board]').forEach(el => {
-                const boardName = el.dataset.board;
-                el.onclick = (e) => { e.stopPropagation(); setBoardStyle(boardName); };
-                el.ontouchend = (e) => { e.preventDefault(); e.stopPropagation(); setBoardStyle(boardName); };
-            });
-
-            document.querySelectorAll('#online-tc-grid .time-card').forEach(card => {
-                const tc = card.dataset.tc;
-                const handler = (e) => {
-                    e.stopPropagation();
-                    document.querySelectorAll('#online-tc-grid .time-card').forEach(c => c.classList.remove('active-tc'));
-                    card.classList.add('active-tc');
-                    selectedOnlineTC = tc;
-                };
-                card.onclick = handler;
-                card.ontouchend = handler;
-            });
-
-            document.querySelectorAll('#offline-tc-grid .time-card').forEach(card => {
-                const tc = card.dataset.tc;
-                const handler = (e) => {
-                    e.stopPropagation();
-                    document.querySelectorAll('#offline-tc-grid .time-card').forEach(c => c.classList.remove('active-tc'));
-                    card.classList.add('active-tc');
-                    selectedOfflineTC = tc;
-                };
-                card.onclick = handler;
-                card.ontouchend = handler;
-            });
-
-            bindAction('find-game-btn', () => {
-                isOffline = false;
-                document.getElementById('search-status').innerText = `Поиск соперника (${selectedOnlineTC})...`;
-                openOvl('wait-scr');
-                setTimeout(() => {
-                    closeOvl('wait-scr');
-                    startOnlineGame(selectedOnlineTC);
-                }, 1200);
-            });
-
-            bindAction('cancel-search-btn', () => closeOvl('wait-scr'));
-
-            bindAction('start-offline-btn', () => {
-                isOffline = true;
-                myColor = 'white';
-                closeOvl('set-ovl');
-                document.getElementById('m-scr').classList.remove('active');
-                document.getElementById('wait-scr').classList.remove('active');
-                document.getElementById('game-scr').classList.add('active');
-                document.getElementById('opp-name').innerText = "Игрок 2 (Черные)";
-                document.getElementById('my-name').innerText = "Игрок 1 (Белые)";
-                initGameConfig(selectedOfflineTC);
-            });
-
-            bindAction('resign-btn', () => {
-                if(!isOffline) {
-                    applyRatingChange(false, getPool(selectedOnlineTC));
-                    showEnd("ВЫ СДАЛИСЬ. ПОРАЖЕНИЕ!");
-                } else {
-                    location.reload();
-                }
-            });
-
-            bindAction('menu-reload-btn', () => location.reload
+        function selectTimeCard(card, type) {
+            const gridId = type === 'online' ? 'online-tc-grid' : 'offline-tc-grid';
+            document
