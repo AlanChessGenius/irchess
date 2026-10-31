@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IRCHESS</title>
+    <!-- Безопасная загрузка библиотек с fallback -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
@@ -11,7 +12,7 @@
             --accent: #6366f1; 
             --accent-glow: rgba(99, 102, 241, 0.4);
             --bg: #09090b; 
-            --card-bg: rgba(24, 24, 27, 0.9);
+            --card-bg: rgba(24, 24, 27, 0.95);
             --border: rgba(255, 255, 255, 0.08);
             --sq-l: #f0d9b5; 
             --sq-d: #b58863; 
@@ -35,7 +36,7 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
         }
         
-        .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 10; }
+        .screen { display: none; position: fixed; inset: 0; align-items: center; justify-content: center; z-index: 10; background: var(--bg); }
         .screen.active { display: flex; }
 
         .menu-container { width: 520px; padding: 40px; text-align: center; position: relative; z-index: 20; }
@@ -123,4 +124,8 @@
     <!-- Настройки -->
     <div id="set-ovl" class="ovl" onclick="closeOvl('set-ovl')">
         <div class="glass-panel menu-container" style="width: 420px; text-align: left;" onclick="event.stopPropagation()">
-            <h
+            <h3 style="margin-top: 0; font-size: 22px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
+            
+            <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 1.5px;">АКЦЕНТ ИНТЕРФЕЙСА</div>
+            <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px">
+                <div id="th-p" class="opt-btn" style="background: #
