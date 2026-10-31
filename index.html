@@ -79,27 +79,26 @@
         <div id="hi" class="u-nick">...</div><h1>IRCHESS</h1>
         <div style="display:flex; gap:15px; margin:25px 0"><button class="btn b-st" style="flex:1" onclick="ov('p-scr')">ПРОФИЛЬ</button><button class="btn b-st" style="flex:1; background:#111; border:2px solid var(--accent)" onclick="ov('f-scr')">ДРУЗЬЯ</button></div>
         
-        <div style="font-size:12px; color:var(--accent); font-weight:bold; margin-bottom:5px; text-transform:uppercase;">Выберите контроль времени для создания онлайн игры:</div>
+        <div style="font-size:12px; color:var(--accent); font-weight:bold; margin-bottom:5px; text-transform:uppercase;">Выберите контроль времени:</div>
         <div class="grid">
-            <div class="card" onclick="createOnlineGame('1+0')"><b>1+0</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('2+1')"><b>2+1</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('3+0')"><b>3+0</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('3+2')"><b>3+2</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('5+0')"><b>5+0</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('5+3')"><b>5+3</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('10+0')"><b>10+0</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('15+10')"><b>15+10</b><span>ONLINE</span></div>
-            <div class="card" onclick="createOnlineGame('30+0')"><b>30+0</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('1+0')"><b>1+0</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('2+1')"><b>2+1</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('3+0')"><b>3+0</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('3+2')"><b>3+2</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('5+0')"><b>5+0</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('5+3')"><b>5+3</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('10+0')"><b>10+0</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('15+10')"><b>15+10</b><span>ONLINE</span></div>
+            <div class="card" onclick="startSearch('30+0')"><b>30+0</b><span>ONLINE</span></div>
         </div>
         <div class="rf"><div>BUL <b id="rb">1400</b></div><div>BLZ <b id="rl">1400</b></div><div>RAP <b id="rr">1400</b></div></div>
     </div></div>
 
-    <!-- Окно ожидания соперника -->
-    <div id="wait-scr" class="ovl"><div class="glass g-box" style="width:450px;">
-        <h2>ОЖИДАНИЕ ИГРОКА</h2>
-        <p style="font-size: 14px; opacity: 0.7; margin-bottom: 20px;">Дай эту ссылку другу или код комнаты:</p>
-        <input type="text" id="room-link" readonly style="width:100%; padding:12px; background:#000; border:1px solid var(--accent); color:#fff; border-radius:8px; text-align:center; font-size:14px; margin-bottom: 20px;" onclick="this.select()">
-        <button class="btn b-st" style="background:#222; width:100%" onclick="location.reload()">ОТМЕНИТЬ</button>
+    <!-- Окно поиска соперника -->
+    <div id="wait-scr" class="ovl"><div class="glass g-box" style="width:400px;">
+        <h2>ПОИСК СОПЕРНИКА</h2>
+        <p id="search-status" style="font-size: 15px; color: var(--accent); margin: 20px 0; font-weight: bold;">Ищем игрока...</p>
+        <button class="btn b-st" style="background:#222; width:100%" onclick="cancelSearch()">ОТМЕНИТЬ</button>
     </div></div>
 
     <div id="p-scr" class="ovl" onclick="hd()"><div class="glass g-box" style="width:520px" onclick="event.stopPropagation()"><h2>ПРОФИЛЬ</h2><div id="p-d" style="text-align:left; line-height:2.2; padding:30px; background:rgba(0,0,0,0.4); border-radius:24px; margin-bottom:20px; border:1px solid var(--accent)"></div><button class="btn b-st" style="background:#222; width:100%" onclick="hd()">ЗАКРЫТЬ</button></div></div>
@@ -110,43 +109,38 @@
 
     <script>
         let game, sel = null, draggingFrom = null;
-        let myColor = 'white'; // По умолчанию белые
+        let myColor = 'white';
         let currentRoomId = null;
+        let activeTimeControl = null;
 
-        const socket = io('http://localhost:3000'); 
+        // Автоматически подключаемся к твоему серверу (на Render или локально)
+        const socket = io(); 
 
-        // Проверяем, зашел ли игрок по ссылке с кодом комнаты (например: index.html?room=xyz123)
         window.onload = () => { 
             stT(localStorage.getItem('ir_theme')||'p'); 
             setBoard(localStorage.getItem('ir_board')||'brown');
             initU(); 
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const roomToJoin = urlParams.get('room');
-            if (roomToJoin) {
-                // Если зашел по ссылке — автоматически присоединяемся за черных
-                myColor = 'black';
-                currentRoomId = roomToJoin;
-                socket.emit('join_game', roomToJoin);
-            }
         };
 
-        // Создать онлайн игру
-        function createOnlineGame(timeControl) {
-            socket.emit('create_game', timeControl);
+        // Нажатие на карточку времени — запуск поиска
+        function startSearch(timeControl) {
+            activeTimeControl = timeControl;
+            socket.emit('find_game', timeControl);
+            document.getElementById('search-status').innerText = `Поиск игры (${timeControl})...`;
+            ov('wait-scr');
         }
 
-        // Сервер подтвердил создание комнаты
-        socket.on('game_created', (data) => {
-            currentRoomId = data.roomId;
-            myColor = data.color; // Ты белые
-            const fullLink = window.location.origin + window.location.pathname + '?room=' + data.roomId;
-            document.getElementById('room-link').value = fullLink;
-            ov('wait-scr');
-        });
+        function cancelSearch() {
+            if(activeTimeControl) {
+                socket.emit('cancel_search', activeTimeControl);
+            }
+            hd();
+        }
 
-        // Второй игрок подключился — запускаем игру у обоих!
-        socket.on('start_online_game', (data) => {
+        // Сервер нашел соперника и создал игру
+        socket.on('game_started', (data) => {
+            currentRoomId = data.roomId;
+            myColor = data.color; // Сервер сам решает, кто белые, а кто черные
             hd();
             game = new Chess();
             document.getElementById('m-scr').style.display = 'none';
@@ -159,11 +153,6 @@
             game.move(moveData);
             render();
             checkEnd();
-        });
-
-        socket.on('error_msg', (msg) => {
-            alert(msg);
-            location.href = window.location.pathname; // Сброс ссылки
         });
 
         const names = ["Storm", "Ace", "Nova", "Rex", "Shadow", "King", "Wolf", "Alpha", "Titan", "Viper"];
@@ -201,7 +190,6 @@
         function render(){
             const b=document.getElementById('board'); b.innerHTML=''; const pos=game.board();
             
-            // Если мы играем за черных, переворачиваем ряды и клетки
             let rows = [0,1,2,3,4,5,6,7];
             let cols = [0,1,2,3,4,5,6,7];
             if(myColor === 'black') {
@@ -228,7 +216,6 @@
         }
 
         function squareClick(id) {
-            // Ходить можно только своими фигурами в свой ход
             const piece = game.get(id);
             if(game.turn() !== myColor && document.getElementById('mode-title').innerText !== "OFFLINE PLAY") return;
 
@@ -239,7 +226,6 @@
                 if(m) { 
                     sel = null; 
                     checkEnd();
-                    // Отправляем ход сопернику через сервер (если не офлайн)
                     if(currentRoomId && document.getElementById('mode-title').innerText !== "OFFLINE PLAY") {
                         socket.emit('move', { roomId: currentRoomId, moveData: {from: m.from, to: m.to, promotion: 'q'} });
                     }
@@ -270,7 +256,7 @@
                     if(m) { 
                         sel = null; 
                         checkEnd();
-                        if(currentRoomId && document.getElementById('mode-title').innerText !== "ORIGINAL OFFLINE" && document.getElementById('mode-title').innerText !== "OFFLINE PLAY") {
+                        if(currentRoomId && document.getElementById('mode-title').innerText !== "OFFLINE PLAY") {
                             socket.emit('move', { roomId: currentRoomId, moveData: {from: m.from, to: m.to, promotion: 'q'} });
                         }
                     }
