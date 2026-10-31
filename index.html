@@ -39,6 +39,7 @@
         .app-screen { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; inset: 0; z-index: 10; background: var(--bg); }
         .app-screen.active { display: flex !important; }
 
+        /* Большое и просторное меню */
         .menu-container { width: 720px; max-width: 96vw; padding: 44px; text-align: center; max-height: 96vh; overflow-y: auto; position: relative; z-index: 20; pointer-events: auto !important; }
         .brand-subtitle { font-size: 12px; color: var(--accent); font-weight: 800; letter-spacing: 4px; margin-bottom: 8px; text-transform: uppercase; }
         h1 { font-size: 48px; letter-spacing: 10px; text-transform: uppercase; font-weight: 900; margin: 0 0 26px; color: #fff; }
@@ -71,6 +72,7 @@
         .rating-footer { display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.4); padding: 16px; border-radius: 10px; border: 1px solid var(--border); font-size: 12px; color: #a1a1aa; margin-top: 24px; position: relative; z-index: 30; pointer-events: auto !important; }
         .rating-footer b { font-size: 15px; color: #fff; font-family: monospace; }
 
+        /* Игровое поле */
         #game-scr { gap: 15px; padding: 10px; flex-direction: column; justify-content: center; }
         
         #board { height: 68vh; width: 68vh; max-width: 90vw; max-height: 90vw; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); border-radius: 8px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.7); position: relative; border: 1px solid rgba(255,255,255,0.08); z-index: 15; pointer-events: auto !important; }
@@ -83,6 +85,7 @@
         .p-i img { width: 92%; height: 92%; object-fit: contain; pointer-events: none; }
         .p-i:active { cursor: grabbing; }
 
+        /* Боковые панели часов: сверху соперник, снизу мы */
         .side-panel { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 90vw; gap: 8px; z-index: 15; pointer-events: auto !important; }
         .player-card { 
             background: var(--card-bg); border: 1px solid var(--border); 
@@ -91,6 +94,7 @@
         }
         .player-info { font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55vw; }
         
+        /* Часы справа сверху и справа снизу */
         .clock { 
             font-family: monospace; font-size: 14px; font-weight: 900; background: #000; 
             padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); min-width: 60px; text-align: right; color: #f4f4f5; flex-shrink: 0; margin-left: auto;
@@ -99,7 +103,541 @@
         .clock.low-time { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse-red 1s infinite; }
         @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+        /* Модальные окна */
         .ovl { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); pointer-events: auto !important; }
         .ovl.active { display: flex !important; }
 
-        .settings-btn { position: fixed; top: 20px; right: 20px; cursor: pointer; font-size: 20px; z-index: 500; opacity: 0.85; background: rgba(
+        .settings-btn { position: fixed; top: 20px; right: 20px; cursor: pointer; font-size: 20px; z-index: 500; opacity: 0.85; background: rgba(255,255,255,0.05); border: 1px solid var(--border); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; pointer-events: auto !important; }
+        .settings-btn:hover { opacity: 1; border-color: var(--accent); background: rgba(255,255,255,0.1); }
+
+        .opt-btn { width: 56px; height: 36px; border-radius: 8px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); display: flex; overflow: hidden; transition: 0.2s; position: relative; z-index: 30; pointer-events: auto !important; }
+        .opt-btn.active-opt { border-color: #fff !important; box-shadow: 0 0 12px var(--accent) !important; transform: scale(1.05); }
+
+        .game-controls { display: flex; gap: 8px; }
+
+        @media(min-width: 900px) {
+            #game-scr { flex-direction: row; gap: 30px; padding: 25px; }
+            #board { height: 82vh; width: 82vh; max-width: 75vw; max-height: 75vw; }
+            .side-panel { height: 82vh; width: 280px; flex-direction: column; justify-content: space-between; }
+            .player-card { width: 100%; flex: unset; padding: 14px 16px; justify-content: space-between; }
+            .player-info { max-width: 150px; font-size: 13px; }
+            .clock { font-size: 16px; min-width: 75px; padding: 5px 8px; text-align: right; }
+            .game-controls { width: 100%; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    
+    <div class="settings-btn" id="open-settings-btn" onclick="openOvl('set-ovl')">⚙️</div>
+    
+    <!-- Настройки -->
+    <div id="set-ovl" class="ovl" onclick="if(event.target === this) closeOvl('set-ovl')">
+        <div class="glass-panel menu-container" style="width: 540px; text-align: left;" onclick="event.stopPropagation()">
+            <h3 style="margin-top: 0; font-size: 20px; letter-spacing: 2px; text-align: center;">НАСТРОЙКИ</h3>
+            
+            <div class="section-title">ФОН (НЕОНОВОЕ СВЕЧЕНИЕ)</div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 16px">
+                <div id="th-p" class="opt-btn" style="background: #6366f1" onclick="setTheme('p')" data-theme="p" title="Фиолетовый"></div>
+                <div id="th-g" class="opt-btn" style="background: #10b981" onclick="setTheme('g')" data-theme="g" title="Зеленый"></div>
+                <div id="th-b" class="opt-btn" style="background: #f43f5e" onclick="setTheme('b')" data-theme="b" title="Красный"></div>
+                <div id="th-y" class="opt-btn" style="background: #eab308" onclick="setTheme('y')" data-theme="y" title="Желтый"></div>
+            </div>
+
+            <div class="section-title">СТИЛЬ ДОСКИ</div>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px">
+                <div id="br-brown" class="opt-btn" onclick="setBoardStyle('brown')" data-board="brown" title="Классика"><div style="flex:1;background:#f0d9b5;pointer-events:none"></div><div style="flex:1;background:#b58863;pointer-events:none"></div></div>
+                <div id="br-green" class="opt-btn" onclick="setBoardStyle('green')" data-board="green" title="Зеленая"><div style="flex:1;background:#ebecd0;pointer-events:none"></div><div style="flex:1;background:#779556;pointer-events:none"></div></div>
+                <div id="br-glass" class="opt-btn" onclick="setBoardStyle('glass')" data-board="glass" title="Стеклянная"><div style="flex:1;background:rgba(255,255,255,0.4);pointer-events:none"></div><div style="flex:1;background:rgba(0,0,0,0.4);pointer-events:none"></div></div>
+            </div>
+
+            <div class="section-title">ОФФЛАЙН РЕЖИМ (КОНТРОЛЬ ВРЕМЕНИ)</div>
+            <div class="time-grid" id="offline-tc-grid" style="margin-bottom: 20px;">
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="1+0"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="2+1"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="3+0"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="3+2"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card active-tc" onclick="selectTimeCard(this, 'offline')" data-tc="5+0"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="5+3"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="10+0"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="15+10"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'offline')" data-tc="30+0"><b>30+0</b><span>RAPID</span></div>
+            </div>
+
+            <button class="btn btn-secondary" style="margin-bottom: 10px;" onclick="startOfflineGame()">ИГРАТЬ ОФФЛАЙН</button>
+            <button class="btn" onclick="closeOvl('set-ovl')">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Главное меню (Большое, с рейтингами) -->
+    <div id="m-scr" class="app-screen active">
+        <div class="glass-panel menu-container">
+            <div class="brand-subtitle">IRCHESS PLATFORM</div>
+            <h1>IRCHESS</h1>
+            
+            <div class="section-title" style="text-align: center;">ОНЛАЙН BATTLE (ВЫБЕРИТЕ КОНТРОЛЬ)</div>
+            <div class="time-grid" id="online-tc-grid">
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="1+0"><b>1+0</b><span>BULLET</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="2+1"><b>2+1</b><span>BULLET</span></div>
+                <div class="time-card active-tc" onclick="selectTimeCard(this, 'online')" data-tc="3+0"><b>3+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="3+2"><b>3+2</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="5+0"><b>5+0</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="5+3"><b>5+3</b><span>BLITZ</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="10+0"><b>10+0</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="15+10"><b>15+10</b><span>RAPID</span></div>
+                <div class="time-card" onclick="selectTimeCard(this, 'online')" data-tc="30+0"><b>30+0</b><span>RAPID</span></div>
+            </div>
+            <button class="btn" style="margin-top: 8px;" onclick="startSearch()">НАЙТИ СОПЕРНИКА</button>
+
+            <!-- Рейтинги -->
+            <div class="rating-footer">
+                <div>BULLET <b id="r-bullet">1500</b></div>
+                <div>BLITZ <b id="r-blitz">1500</b></div>
+                <div>RAPID <b id="r-rapid">1500</b></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Бесконечный поиск соперника -->
+    <div id="wait-scr" class="ovl">
+        <div class="glass-panel menu-container" style="width: 400px;">
+            <h3 style="margin-top: 0; font-size: 18px;">ПОИСК СОПЕРНИКА</h3>
+            <p id="search-status" style="font-size: 14px; color: var(--accent); margin: 20px 0; font-weight: 700;">Ожидание соперника (<span id="search-tc-label">3+0</span>)...<br><span style="font-size:11px;opacity:0.7;">Откройте вторую вкладку, чтобы сыграть с реальным человеком!</span></p>
+            <button class="btn btn-secondary" onclick="cancelSearch()">ОТМЕНИТЬ</button>
+        </div>
+    </div>
+
+    <!-- Окно конца игры -->
+    <div id="res-scr" class="ovl">
+        <div class="glass-panel menu-container" style="width: 400px;">
+            <h2 id="res-tt" style="margin-top: 0; font-size: 18px;">ИТОГ ПАРТИИ</h2>
+            <p id="res-ds" style="font-size: 16px; margin-bottom: 20px; font-weight: 700; color: #fff;"></p>
+            <button class="btn" onclick="location.reload()">В МЕНЮ</button>
+        </div>
+    </div>
+
+    <!-- Игровой экран -->
+    <div id="game-scr" class="app-screen">
+        <div class="side-panel" id="panel-top" style="order: 1;">
+            <div class="player-card">
+                <div class="player-info"><span>👤</span> <span id="top-name">Соперник</span></div>
+                <div id="top-clock" class="clock">00:00</div>
+            </div>
+        </div>
+
+        <div id="board" style="order: 2;"></div>
+
+        <div class="side-panel" id="panel-bottom" style="order: 3;">
+            <div class="player-card">
+                <div class="player-info"><span>👤</span> <span id="bottom-name">Вы</span></div>
+                <div id="bottom-clock" class="clock">00:00</div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-secondary" style="font-size: 12px; padding: 10px;" onclick="resignGame()">СДАТЬСЯ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let game = null, sel = null;
+        let myColor = 'white';
+        let selectedOnlineTC = '3+0';
+        let selectedOfflineTC = '5+0';
+        let isOffline = false;
+        let searching = false;
+        let myPlayerId = 'p_' + Math.random().toString(36).substring(2, 9);
+
+        let whiteTime = 180, blackTime = 180, increment = 0;
+        let timerInterval = null;
+
+        let ratings = JSON.parse(localStorage.getItem('ir_ratings')) || { bullet: 1500, blitz: 1500, rapid: 1500 };
+        
+        const pieceSymbols = {
+            'wk': '♔', 'wq': '♕', 'wr': '♖', 'wb': '♗', 'wn': '♘', 'wp': '♙',
+            'bk': '♚', 'bq': '♛', 'br': '♜', 'bb': '♝', 'bn': '♞', 'bp': '♟'
+        };
+
+        const matchmakingChannel = new BroadcastChannel('irchess_matchmaking_v1');
+        let gameChannel = null;
+
+        matchmakingChannel.onmessage = (event) => {
+            const data = event.data;
+            if (!searching) return;
+
+            if (data.type === 'FIND_MATCH' && data.tc === selectedOnlineTC && data.playerId !== myPlayerId) {
+                searching = false;
+                matchmakingChannel.postMessage({
+                    type: 'MATCH_FOUND',
+                    tc: selectedOnlineTC,
+                    hostId: data.playerId,
+                    guestId: myPlayerId
+                });
+                startRealOnlineGame(selectedOnlineTC, 'white', 'Соперник (Онлайн)');
+            } else if (data.type === 'MATCH_FOUND' && data.guestId === myPlayerId) {
+                searching = false;
+                startRealOnlineGame(selectedOnlineTC, 'black', 'Соперник (Онлайн)');
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => { 
+            const savedTheme = localStorage.getItem('ir_theme') || 'p';
+            const savedBoard = localStorage.getItem('ir_board') || 'brown';
+            setTheme(savedTheme, false);
+            setBoardStyle(savedBoard, false);
+            updateRatingsUI();
+        });
+
+        function updateRatingsUI() {
+            document.getElementById('r-bullet').innerText = Math.round(ratings.bullet);
+            document.getElementById('r-blitz').innerText = Math.round(ratings.blitz);
+            document.getElementById('r-rapid').innerText = Math.round(ratings.rapid);
+            localStorage.setItem('ir_ratings', JSON.stringify(ratings));
+        }
+
+        function getPool(tc) {
+            if(tc.includes('1+0') || tc.includes('2+1')) return 'bullet';
+            if(tc.includes('10+0') || tc.includes('15+10') || tc.includes('30+0')) return 'rapid';
+            return 'blitz';
+        }
+
+        function openOvl(id) { document.getElementById(id).classList.add('active'); }
+        function closeOvl(id) { document.getElementById(id).classList.remove('active'); }
+
+        function setTheme(c, save = true){
+            const accentMap = {
+                'p': { main: '#6366f1', glow: 'rgba(99, 102, 241, 0.3)' },
+                'g': { main: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' },
+                'b': { main: '#f43f5e', glow: 'rgba(244, 63, 94, 0.3)' },
+                'y': { main: '#eab308', glow: 'rgba(234, 179, 8, 0.3)' }
+            };
+            const theme = accentMap[c] || accentMap['p'];
+            document.documentElement.style.setProperty('--accent', theme.main);
+            document.documentElement.style.setProperty('--accent-glow', theme.glow);
+            if(save) localStorage.setItem('ir_theme', c);
+            
+            document.querySelectorAll('[data-theme]').forEach(el => el.classList.remove('active-opt'));
+            const activeEl = document.getElementById('th-' + c);
+            if(activeEl) activeEl.classList.add('active-opt');
+        }
+
+        function setBoardStyle(t, save = true) {
+            const r = document.documentElement;
+            if(t === 'brown') {
+                r.style.setProperty('--sq-l', '#f0d9b5'); r.style.setProperty('--sq-d', '#b58863');
+            } else if(t === 'green') {
+                r.style.setProperty('--sq-l', '#ebecd0'); r.style.setProperty('--sq-d', '#779556');
+            } else if(t === 'glass') {
+                r.style.setProperty('--sq-l', 'rgba(255, 255, 255, 0.35)'); r.style.setProperty('--sq-d', 'rgba(0, 0, 0, 0.45)');
+            }
+            if(save) localStorage.setItem('ir_board', t);
+            
+            document.querySelectorAll('[data-board]').forEach(el => el.classList.remove('active-opt'));
+            const activeEl = document.getElementById('br-' + t);
+            if(activeEl) activeEl.classList.add('active-opt');
+        }
+
+        function selectTimeCard(card, type) {
+            const gridId = type === 'online' ? 'online-tc-grid' : 'offline-tc-grid';
+            document.querySelectorAll(`#${gridId} .time-card`).forEach(c => c.classList.remove('active-tc'));
+            card.classList.add('active-tc');
+            const tc = card.dataset.tc;
+            if(type === 'online') selectedOnlineTC = tc;
+            else selectedOfflineTC = tc;
+        }
+
+        function startSearch() {
+            isOffline = false;
+            searching = true;
+            document.getElementById('search-tc-label').innerText = selectedOnlineTC;
+            openOvl('wait-scr');
+
+            matchmakingChannel.postMessage({
+                type: 'FIND_MATCH',
+                tc: selectedOnlineTC,
+                playerId: myPlayerId
+            });
+        }
+
+        function cancelSearch() {
+            searching = false;
+            closeOvl('wait-scr');
+        }
+
+        function startRealOnlineGame(tc, assignedColor, oppName) {
+            myColor = assignedColor;
+            closeOvl('wait-scr');
+            document.getElementById('top-name').innerText = oppName;
+            document.getElementById('bottom-name').innerText = "Вы";
+            
+            gameChannel = new BroadcastChannel('irchess_game_' + tc);
+            gameChannel.onmessage = (e) => {
+                const data = e.data;
+                if(data.type === 'MOVE' && data.playerId !== myPlayerId) {
+                    game.move(data.move);
+                    addIncrement(data.color === 'w' ? 'w' : 'b');
+                    checkEnd();
+                    render();
+                } else if(data.type === 'RESIGN' && data.playerId !== myPlayerId) {
+                    showEnd("СОПЕРНИК СДАЛСЯ. ВЫ ПОБЕДИЛИ!");
+                }
+            };
+
+            initGameConfig(tc);
+        }
+
+        function startOfflineGame() {
+            isOffline = true;
+            myColor = 'white';
+            closeOvl('set-ovl');
+            document.getElementById('m-scr').classList.remove('active');
+            document.getElementById('wait-scr').classList.remove('active');
+            document.getElementById('game-scr').classList.add('active');
+            
+            document.getElementById('top-name').innerText = "Игрок 2 (Черные)";
+            document.getElementById('bottom-name').innerText = "Игрок 1 (Белые)";
+            
+            initGameConfig(selectedOfflineTC);
+        }
+
+        function initGameConfig(tc) {
+            if (typeof Chess === 'undefined') {
+                alert("Ошибка: библиотека шахматной логики не загрузилась.");
+                return;
+            }
+            game = new Chess();
+            const parts = tc.split('+');
+            const minutes = parseInt(parts[0]);
+            increment = parseInt(parts[1] || 0);
+            whiteTime = minutes * 60;
+            blackTime = minutes * 60;
+            document.getElementById('m-scr').classList.remove('active');
+            document.getElementById('wait-scr').classList.remove('active');
+            document.getElementById('set-ovl').classList.remove('active');
+            document.getElementById('game-scr').classList.add('active');
+            updateClockDisplay();
+            startTimer();
+            render();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if(!game || game.game_over()) return;
+                if(game.turn() === 'w') {
+                    whiteTime--;
+                    if(whiteTime <= 0) endByTime('black');
+                } else {
+                    blackTime--;
+                    if(blackTime <= 0) endByTime('white');
+                }
+                updateClockDisplay();
+            }, 1000);
+        }
+
+        function addIncrement(color) {
+            if(color === 'w') whiteTime += increment;
+            else blackTime += increment;
+            updateClockDisplay();
+        }
+
+        function updateClockDisplay() {
+            const fmt = (s) => {
+                let m = Math.floor(s / 60), sec = s % 60;
+                return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+            };
+            
+            const topClock = document.getElementById('top-clock');
+            const bottomClock = document.getElementById('bottom-clock');
+
+            const topT = myColor === 'white' ? blackTime : whiteTime;
+            const bottomT = myColor === 'white' ? whiteTime : blackTime;
+
+            topClock.innerText = fmt(topT);
+            bottomClock.innerText = fmt(bottomT);
+
+            const isWhiteTurn = (game.turn() === 'w');
+            const isTopTurn = myColor === 'white' ? !isWhiteTurn : isWhiteTurn;
+            const isBottomTurn = myColor === 'white' ? isWhiteTurn : !isWhiteTurn;
+
+            topClock.classList.toggle('active', isTopTurn);
+            bottomClock.classList.toggle('active', isBottomTurn);
+            topClock.classList.toggle('low-time', topT <= 10);
+            bottomClock.classList.toggle('low-time', bottomT <= 10);
+        }
+
+        function endByTime(winnerColor) {
+            clearInterval(timerInterval);
+            const win = isOffline ? (winnerColor === 'white') : (winnerColor === myColor);
+            if(!isOffline) applyRatingChange(win, getPool(selectedOnlineTC));
+            showEnd(win ? "ПОБЕДА ПО ВРЕМЕНИ!" : "ПОРАЖЕНИЕ ПО ВРЕМЕНИ!");
+        }
+
+        function resignGame() {
+            if(!isOffline) {
+                if(gameChannel) {
+                    gameChannel.postMessage({ type: 'RESIGN', playerId: myPlayerId });
+                }
+                applyRatingChange(false, getPool(selectedOnlineTC));
+                showEnd("ВЫ СДАЛИСЬ. ПОРАЖЕНИЕ!");
+            } else {
+                location.reload();
+            }
+        }
+
+        function applyRatingChange(won, pool) {
+            let r = ratings[pool];
+            let diff = Math.floor(Math.random() * 51) + 50; 
+            let change = 0;
+
+            if (r >= 1500 && r < 1700) {
+                if (won) {
+                    change = (diff >= 50 && diff <= 100) ? 5 : 15;
+                } else {
+                    change = (diff >= 50 && diff <= 100) ? -30 : -15;
+                }
+            } else if (r >= 1700 && r < 2000) {
+                if (won) {
+                    let randArr = [7, 8, 9];
+                    let base = randArr[Math.floor(Math.random() * randArr.length)];
+                    change = (diff >= 50 && diff <= 100) ? 4 : base;
+                } else {
+                    change = (diff >= 50 && diff <= 100) ? -10 : -8;
+                }
+            } else if (r >= 2000) {
+                change = won ? 3 : -3;
+            } else {
+                change = won ? 15 : -15;
+            }
+
+            ratings[pool] = Math.max(100, ratings[pool] + change);
+            updateRatingsUI();
+        }
+
+        function render(){
+            const b = document.getElementById('board'); 
+            b.innerHTML = ''; 
+            const boardData = game.board();
+            let rows = [0,1,2,3,4,5,6,7];
+            let cols = [0,1,2,3,4,5,6,7];
+            if(myColor === 'black') { rows.reverse(); cols.reverse(); }
+
+            for(let r of rows) {
+                for(let c of cols) {
+                    let s = boardData[r][c];
+                    let id = String.fromCharCode(97+c) + (8-r);
+                    let d = document.createElement('div');
+                    d.className = `sq ${(r+c)%2===0?'w-s':'b-s'} ${sel===id?'sel':''}`; 
+                    d.dataset.id = id;
+
+                    if(game.in_check() && s && s.type==='k' && s.color===game.turn()) d.classList.add('chk');
+
+                    if(s){
+                        const pieceDiv = document.createElement('div');
+                        pieceDiv.className = 'p-i';
+                        pieceDiv.draggable = true;
+                        
+                        const img = document.createElement('img');
+                        img.src = `pieces/${s.color}${s.type}.png`;
+                        img.onerror = () => {
+                            pieceDiv.innerHTML = pieceSymbols[s.color + s.type];
+                            pieceDiv.style.color = s.color === 'w' ? '#fff' : '#000';
+                        };
+                        pieceDiv.appendChild(img);
+
+                        pieceDiv.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', id);
+                        });
+                        
+                        d.appendChild(pieceDiv);
+                    }
+
+                    d.addEventListener('dragover', (e) => e.preventDefault());
+                    d.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const fromId = e.dataTransfer.getData('text/plain');
+                        makeMove(fromId, id);
+                    });
+
+                    d.onclick = () => squareClick(id);
+                    b.appendChild(d);
+                }
+            }
+        }
+
+        function squareClick(id) {
+            if(game.game_over()) return;
+            const piece = game.get(id);
+            const isMyTurn = isOffline || (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
+            if(!isMyTurn && !isOffline) return;
+
+            if(sel === id) { 
+                sel = null; 
+            } else if(sel) {
+                makeMove(sel, id);
+                sel = null;
+            } else if(piece && (isOffline || piece.color === game.turn())) { 
+                sel = id; 
+            }
+            render();
+        }
+
+        function makeMove(from, to) {
+            if(game.game_over()) return;
+            const isMyTurn = isOffline || (game.turn() === 'w' && myColor === 'white') || (game.turn() === 'b' && myColor === 'black');
+            if(!isMyTurn && !isOffline) return;
+
+            const moveObj = { from: from, to: to, promotion: 'q' };
+            const m = game.move(moveObj);
+            
+            if(m) { 
+                sel = null; 
+                addIncrement(m.color);
+                
+                if(!isOffline && gameChannel) {
+                    gameChannel.postMessage({
+                        type: 'MOVE',
+                        move: moveObj,
+                        color: m.color,
+                        playerId: myPlayerId
+                    });
+                }
+
+                checkEnd();
+                render();
+            } else {
+                const piece = game.get(to);
+                if(piece && (isOffline || piece.color === game.turn())) {
+                    sel = to;
+                    render();
+                }
+            }
+        }
+
+        function checkEnd() {
+            if(game.game_over()) {
+                clearInterval(timerInterval);
+                let msg = "НИЧЬЯ!";
+                let won = false;
+                if(game.in_checkmate()) {
+                    if(isOffline) {
+                        msg = (game.turn() === 'w' ? "ЧЕРНЫЕ" : "БЕЛЫЕ") + " ПОБЕДИЛИ!";
+                    } else {
+                        won = (game.turn() !== (myColor==='white'?'w':'b'));
+                        msg = won ? "ВЫ ПОБЕДИЛИ!" : "ВЫ ПРОИГРАЛИ!";
+                        applyRatingChange(won, getPool(selectedOnlineTC));
+                    }
+                }
+                showEnd(msg);
+            }
+        }
+
+        function showEnd(txt) {
+            document.getElementById('res-ds').innerText = txt;
+            openOvl('res-scr');
+        }
+    </script>
+</body>
+</html>
